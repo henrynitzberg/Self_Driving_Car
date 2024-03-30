@@ -26,3 +26,5 @@ labels = read_images_from_dir(labels_dir, NUM_DATA)
 
 # cv2.imshow("yay", labels[0])
 # cv2.waitKey()
+
+# TODO: what this article says
