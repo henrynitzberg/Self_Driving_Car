@@ -73,7 +73,7 @@ def pick_random_image():
 def bake_batch():
     # images = torch.zeros([BATCH_SIZE,3,IMAGE_DIMS[1],IMAGE_DIMS[0]])
     images = [None] * BATCH_SIZE
-    labels = torch.zeros([BATCH_SIZE,3,IMAGE_DIMS[1],IMAGE_DIMS[0]])
+    labels = torch.zeros([BATCH_SIZE,IMAGE_DIMS[1],IMAGE_DIMS[0]])
     for i in range(BATCH_SIZE):
         images[i], labels[i] = pick_random_image()
     return images, labels
