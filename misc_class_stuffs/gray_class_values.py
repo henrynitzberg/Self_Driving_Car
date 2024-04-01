@@ -1,3 +1,6 @@
+# the particular model we are using for segmentation uses a gray image as the segmentation map.
+# Thus, we have to convert class -> camvid color -> PfD: Ground Truth color -> gray color
+
 import cv2
 import numpy as np
 
