@@ -28,9 +28,9 @@ transformLab=tf.Compose([tf.ToPILImage(), tf.ToTensor()])
 
 # TODO: don't hardcode paths
 # Note: if loading images from multiple label directories, can concat lists with '+'
-models_dir = "C:/Users/nitzb/Developer/CS141/final_project/segmentation_model/models"
-labels_dir = "C:/Users/nitzb/Developer/CS141/final_project/segmentation_model/data/01_labels_gray"
-imgs_dir = "C:/Users/nitzb/Developer/CS141/final_project/segmentation_model/data/01_images/images"
+models_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/models"
+labels_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_labels_gray"
+imgs_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_images"
 images = []
 # the labels are really segmentation maps, but I call them labels to be less verbose
 labels = []
