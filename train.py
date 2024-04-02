@@ -12,14 +12,14 @@ def show(img):
     cv2.waitKey()
 
 # number of images used for training.
-NUM_DATA = 50
+NUM_DATA = 2500
 
 # dimensions of images used for training (width x height)
 #   original dims are 1914 x 1052
 IMAGE_DIMS = (950, 500)
 
 # params for pytorch DCNN
-LEARNING_RATE = 1e-5
+LEARNING_RATE = 1e-6
 BATCH_SIZE = 3 # must be < NUM_DATA
 
 # transforms applied to the images and labels before forward pass of DCNN
@@ -27,8 +27,10 @@ transformImg=tf.Compose([tf.ToPILImage(),tf.ToTensor(),tf.Normalize((0.485, 0.45
 transformLab=tf.Compose([tf.ToPILImage(), tf.ToTensor()])
 
 # TODO: don't hardcode paths
-labels_dir = "C:/Users/nitzb/Developer/CS141/final_project/segmentation_model/data/labels"
-imgs_dir = "C:/Users/nitzb/Developer/CS141/final_project/segmentation_model/data/imgs"
+# Note: if loading images from multiple label directories, can concat lists with '+'
+models_dir = "C:/Users/nitzb/Developer/CS141/final_project/segmentation_model/models"
+labels_dir = "C:/Users/nitzb/Developer/CS141/final_project/segmentation_model/data/01_labels_gray"
+imgs_dir = "C:/Users/nitzb/Developer/CS141/final_project/segmentation_model/data/01_images/images"
 images = []
 # the labels are really segmentation maps, but I call them labels to be less verbose
 labels = []
@@ -37,16 +39,17 @@ labels = []
 # optionally transforms them all to specified dimensions
 # If the directory contains < num_images images, all of the images from the directory are read in
 # returns a list of np matrices
-def read_images_from_dir(directory, num_images, image_dims=None, to_gray=False):
+def read_images_from_dir(directory, num_images, image_dims=None, read_gray=False):
     images = []
     counter = num_images
-    for filename in os.listdir(directory):
+    for filename in tqdm(os.listdir(directory)):
         filename = str(directory + "/" + filename)
-        img = cv2.imread(filename)
+        if read_gray:
+            img = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
+        else:
+            img = cv2.imread(filename)
         if (image_dims != None):
             img = cv2.resize(img, image_dims, interpolation= cv2.INTER_NEAREST)
-        if (to_gray):
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) 
         images.append(img)
         counter -= 1
         if (counter == 0):
@@ -55,28 +58,31 @@ def read_images_from_dir(directory, num_images, image_dims=None, to_gray=False):
     return images
 
 # TODO: download actual images
-# imgs = read_images_from_dir(imgs_dir, NUM_DATA, IMAGE_DIMS)
-labels = read_images_from_dir(labels_dir, NUM_DATA, image_dims=IMAGE_DIMS, to_gray=True)
+images = read_images_from_dir(imgs_dir, NUM_DATA, IMAGE_DIMS)
+labels = read_images_from_dir(labels_dir, NUM_DATA, image_dims=IMAGE_DIMS, read_gray=True)
 
+# show(images[9])
 # gets random image from training data, and corresponding annotated image
 # TODO: perform transformations
 def pick_random_image():
     idx = np.random.randint(0, NUM_DATA)
-    # img = transformImg(imgs[idx])
-    # labeled = transformLab(labels[idx])
+    img = images[idx].copy()
+    labeled = labels[idx].copy()
+    img = transformImg(img)
+    labeled = transformLab(labeled)
 
-    img = None
-    labeled = labels[idx]
+    # img = None
+    # labeled = labels[idx]
     return (img, labeled)
 
 # returns a batch: a list images and a corresponding list of annotated images
 def bake_batch():
-    # images = torch.zeros([BATCH_SIZE,3,IMAGE_DIMS[1],IMAGE_DIMS[0]])
-    images = [None] * BATCH_SIZE
-    labels = torch.zeros([BATCH_SIZE,IMAGE_DIMS[1],IMAGE_DIMS[0]])
+    imgs = torch.zeros([BATCH_SIZE,3,IMAGE_DIMS[1],IMAGE_DIMS[0]])
+    # images = [None] * BATCH_SIZE
+    lbs = torch.zeros([BATCH_SIZE,IMAGE_DIMS[1],IMAGE_DIMS[0]])
     for i in range(BATCH_SIZE):
-        images[i], labels[i] = pick_random_image()
-    return images, labels
+        imgs[i], lbs[i] = pick_random_image()
+    return imgs, lbs
 
 # Defining Network
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -86,3 +92,22 @@ Net=Net.to(device)
 optimizer=torch.optim.Adam(params=Net.parameters(),lr=LEARNING_RATE) # Create adam optimizer
 
 # training
+model_name = "segmentation_model.pt"
+for itr in tqdm(range(20000)):
+    imgs, lbs = bake_batch()
+    imgs = torch.autograd.Variable(imgs, requires_grad=False).to(device)
+    lbs = torch.autograd.Variable(lbs, requires_grad=False).to(device)
+
+    Pred = Net(imgs)['out']
+
+    criterion = torch.nn.CrossEntropyLoss() # Set loss function
+    Loss=criterion(Pred,lbs.long()) # Calculate cross entropy loss
+    Loss.backward() # Backpropogate loss
+    optimizer.step() # Apply gradient descent change to weight
+
+    if itr % 500 == 0 and itr != 0:
+        print("saving to " + models_dir + "/" + model_name)
+        torch.save(Net.state_dict(), models_dir + "/" + model_name)
+
+print("saving to " + models_dir + "/" + model_name)
+torch.save(Net.state_dict(), models_dir + "/" + model_name)
