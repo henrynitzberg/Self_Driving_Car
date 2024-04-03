@@ -69,6 +69,13 @@ def pick_random_image():
     idx = np.random.randint(0, NUM_DATA)
     img = images[idx].copy()
     labeled = labels[idx].copy()
+
+    # for testing STILL LABELS ENTIRE IMAGE AS VOID
+    # height = IMAGE_DIMS[1]
+    # width = IMAGE_DIMS[0]
+    # labeled = np.zeros((height, width), dtype=np.uint8)
+    # labeled[:,:int(width/2)] = 1
+
     img = transformImg(img)
     labeled = transformLab(labeled)
 
@@ -106,7 +113,6 @@ for itr in tqdm(range(3000)):
 
     Pred = Net(imgs)['out']
 
-    # criterion = torch.nn.CrossEntropyLoss() # Set loss function
     criterion = torch.nn.CrossEntropyLoss() # Set loss function
     Loss=criterion(Pred, lbs.long()) # Calculate cross entropy loss
     Loss.backward() # Backpropogate loss
@@ -115,7 +121,7 @@ for itr in tqdm(range(3000)):
     iteration_list.append(itr)
     loss_list.append(Loss.item())  # Assuming Loss is a scalar tensor
 
-    if itr % 500 == 0:
+    if itr % 50 == 0:
         print("saving to " + models_dir + "/" + model_name)
         torch.save(Net.state_dict(), models_dir + "/" + model_name)
 
