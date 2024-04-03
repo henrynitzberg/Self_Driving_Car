@@ -5,6 +5,7 @@ import torchvision.models.segmentation
 import torch
 import torchvision.transforms as tf
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 # TODO: delete
 def show(img):
@@ -12,7 +13,7 @@ def show(img):
     cv2.waitKey()
 
 # number of images used for training.
-NUM_DATA = 2500
+NUM_DATA = 500
 
 # dimensions of images used for training (width x height)
 #   original dims are 1914 x 1052
@@ -29,7 +30,7 @@ transformLab=tf.Compose([tf.ToPILImage(), tf.ToTensor()])
 # TODO: don't hardcode paths
 # Note: if loading images from multiple label directories, can concat lists with '+'
 models_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/models"
-labels_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_labels_gray"
+labels_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_labels_vehicles_only"
 imgs_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_images"
 images = []
 # the labels are really segmentation maps, but I call them labels to be less verbose
@@ -87,27 +88,43 @@ def bake_batch():
 # Defining Network
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 Net = torchvision.models.segmentation.deeplabv3_resnet50()
-Net.classifier[4] = torch.nn.Conv2d(256, 32, kernel_size=(1, 1), stride=(1, 1)) # Change final layer to 32 classes
+Net.classifier[4] = torch.nn.Conv2d(256, 2, kernel_size=(1, 1), stride=(1, 1)) # Change final layer to 2 classes
 Net=Net.to(device)
 optimizer=torch.optim.Adam(params=Net.parameters(),lr=LEARNING_RATE) # Create adam optimizer
 
+iteration_list = []
+loss_list = []
+
 # training
-model_name = "segmentation_model.pt"
-for itr in tqdm(range(20000)):
+model_name = "segmentation_model_2class.pt"
+for itr in tqdm(range(3000)):
     imgs, lbs = bake_batch()
     imgs = torch.autograd.Variable(imgs, requires_grad=False).to(device)
     lbs = torch.autograd.Variable(lbs, requires_grad=False).to(device)
 
+    optimizer.zero_grad()
+
     Pred = Net(imgs)['out']
 
+    # criterion = torch.nn.CrossEntropyLoss() # Set loss function
     criterion = torch.nn.CrossEntropyLoss() # Set loss function
-    Loss=criterion(Pred,lbs.long()) # Calculate cross entropy loss
+    Loss=criterion(Pred, lbs.long()) # Calculate cross entropy loss
     Loss.backward() # Backpropogate loss
     optimizer.step() # Apply gradient descent change to weight
 
-    if itr % 500 == 0 and itr != 0:
+    iteration_list.append(itr)
+    loss_list.append(Loss.item())  # Assuming Loss is a scalar tensor
+
+    if itr % 500 == 0:
         print("saving to " + models_dir + "/" + model_name)
         torch.save(Net.state_dict(), models_dir + "/" + model_name)
 
 print("saving to " + models_dir + "/" + model_name)
 torch.save(Net.state_dict(), models_dir + "/" + model_name)
+
+plt.plot(iteration_list, loss_list, label='Training Loss')
+plt.xlabel('Iteration')
+plt.ylabel('Loss')
+plt.title('Training Loss Over Iterations')
+plt.legend()
+plt.show()

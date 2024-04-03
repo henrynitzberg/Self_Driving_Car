@@ -6,9 +6,10 @@ import torch
 import torchvision.transforms as tf
 import matplotlib.pyplot as plt
 
-image_no = '00038'
-model_path = "C:/Users/nitzb/Developer/CS141/final_project/segmentation_model/models/segmentation_model2.pt"
-image_path = "C:/Users/nitzb/Developer/CS141/final_project/segmentation_model/data/01_images/images/" + image_no + ".png"
+randnum = np.random.randint(2500)
+# randnum = 38
+model_path = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/models/segmentation_model_2class.pt"
+image_path = f"C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_images/{randnum:05d}.png"
 
 IMAGE_DIMS = (950, 500)
 
@@ -19,7 +20,7 @@ transformImg = tf.Compose([tf.ToPILImage(),tf.ToTensor(),tf.Normalize((0.485, 0.
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu') 
 Net = torchvision.models.segmentation.deeplabv3_resnet50()  
-Net.classifier[4] = torch.nn.Conv2d(256, 32, kernel_size=(1, 1), stride=(1, 1)) 
+Net.classifier[4] = torch.nn.Conv2d(256, 2, kernel_size=(1, 1), stride=(1, 1)) 
 Net = Net.to(device)  # Set net to GPU or CPU
 Net.load_state_dict(torch.load(model_path)) # Load trained model
 
@@ -32,8 +33,9 @@ with torch.no_grad():
 
 prediction = tf.Resize((IMAGE_DIMS[1], IMAGE_DIMS[0]))(prediction[0])
 seg = torch.argmax(prediction, 0).cpu().detach().numpy()
-cv2.imshow("yay", seg.astype(np.uint8))
-cv2.imshow("yay2", image)
-plt.imshow(seg)  # display image
+cv2.imshow("image", image)
+# cv2.imshow("segmentation map", seg.astype(np.uint8))
+
+plt.imshow(seg, cmap='viridis')  # display image
 plt.show()
 cv2.waitKey()
