@@ -6,7 +6,6 @@ import torch
 import torchvision.transforms as tf
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-import glob
 
 # TODO: delete
 def show(img):
