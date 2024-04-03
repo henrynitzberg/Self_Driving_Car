@@ -6,6 +6,7 @@ import torch
 import torchvision.transforms as tf
 from tqdm import tqdm
 import matplotlib.pyplot as plt
+import glob
 
 # TODO: delete
 def show(img):
@@ -20,7 +21,7 @@ NUM_DATA = 500
 IMAGE_DIMS = (950, 500)
 
 # params for pytorch DCNN
-LEARNING_RATE = 1e-6
+LEARNING_RATE = 1e-5
 BATCH_SIZE = 3 # must be < NUM_DATA
 
 # transforms applied to the images and labels before forward pass of DCNN
@@ -32,6 +33,10 @@ transformLab=tf.Compose([tf.ToPILImage(), tf.ToTensor()])
 models_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/models"
 labels_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_labels_vehicles_only"
 imgs_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_images"
+# for mac
+# labels_dir = "/Users/nitz/Developer/CS141/final_project/Self_Driving_Car/data/labels"
+# imgs_dir = "/Users/nitz/Developer/CS141/final_project/Self_Driving_Car/data/images"
+
 images = []
 # the labels are really segmentation maps, but I call them labels to be less verbose
 labels = []
@@ -41,11 +46,16 @@ labels = []
 # If the directory contains < num_images images, all of the images from the directory are read in
 # returns a list of np matrices
 def read_images_from_dir(directory, num_images, image_dims=None, read_gray=False):
+    filelist = []
     images = []
     counter = num_images
-    for filename in tqdm(os.listdir(directory)):
+    for filename in (os.listdir(directory)):
+        filelist.append(filename)
+
+    for filename in tqdm(sorted(filelist)):
         filename = str(directory + "/" + filename)
         if read_gray:
+            print(filename)
             img = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
         else:
             img = cv2.imread(filename)
@@ -56,7 +66,7 @@ def read_images_from_dir(directory, num_images, image_dims=None, read_gray=False
         if (counter == 0):
             break
 
-    return images
+    return images.copy()
 
 # TODO: download actual images
 images = read_images_from_dir(imgs_dir, NUM_DATA, IMAGE_DIMS)
