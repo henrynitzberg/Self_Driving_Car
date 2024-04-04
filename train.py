@@ -30,7 +30,7 @@ transformLab=tf.Compose([tf.ToPILImage(), tf.ToTensor()])
 # TODO: don't hardcode paths
 # Note: if loading images from multiple label directories, can concat lists with '+'
 models_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/models"
-labels_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_labels_vehicles_only"
+labels_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_labels_reduced_classes"
 imgs_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_images"
 
 # for mac
@@ -79,8 +79,15 @@ def pick_random_image():
     img = images[idx].copy()
     labeled = labels[idx].copy()
 
-    AnnMap = np.zeros(img.shape[0:2],np.float32)
-    AnnMap[labeled == 1] = 1
+    unique_labels = np.unique(labeled)
+
+    AnnMap = np.zeros_like(labeled, dtype=np.float32)
+    for label in unique_labels:
+        AnnMap[labeled == label] = label
+
+    # plt.imshow(AnnMap, cmap='viridis')
+    # plt.show()
+    # show(AnnMap.astype(np.uint8))
 
     # for testing STILL LABELS ENTIRE IMAGE AS VOID
     # height = IMAGE_DIMS[1]
@@ -105,16 +112,17 @@ def bake_batch():
 # Defining Network
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 Net = torchvision.models.segmentation.deeplabv3_resnet50()
-Net.classifier[4] = torch.nn.Conv2d(256, 2, kernel_size=(1, 1), stride=(1, 1)) # Change final layer to 2 classes
+Net.classifier[4] = torch.nn.Conv2d(256, 6, kernel_size=(1, 1), stride=(1, 1)) # Change final layer to 6 classes
 Net=Net.to(device)
 optimizer=torch.optim.Adam(params=Net.parameters(),lr=LEARNING_RATE) # Create adam optimizer
+criterion = torch.nn.CrossEntropyLoss() # Set loss function
 
 iteration_list = []
 loss_list = []
 
 # training
-model_name = "segmentation_model_2class.pt"
-for itr in tqdm(range(5000)):
+model_name = "segmentation_model_6class.pt"
+for itr in tqdm(range(3000)):
     imgs, lbs = bake_batch()
     imgs = torch.autograd.Variable(imgs, requires_grad=False).to(device)
     lbs = torch.autograd.Variable(lbs, requires_grad=False).to(device)
@@ -123,7 +131,6 @@ for itr in tqdm(range(5000)):
 
     Pred = Net(imgs)['out']
 
-    criterion = torch.nn.CrossEntropyLoss() # Set loss function
     Loss=criterion(Pred, lbs.long()) # Calculate cross entropy loss
     Loss.backward() # Backpropogate loss
     optimizer.step() # Apply gradient descent change to weight

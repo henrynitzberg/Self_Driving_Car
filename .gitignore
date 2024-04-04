@@ -1,2 +1,5 @@
 data/*
 models/*
+*.png
+*.jpeg
+*.jpg

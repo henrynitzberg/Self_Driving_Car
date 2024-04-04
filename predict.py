@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 randnum = np.random.randint(500)
 # randnum = 38
-model_path = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/models/segmentation_model_2class.pt"
+model_path = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/models/segmentation_model_6class.pt"
 image_path = f"C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_images/{randnum:05d}.png"
 
 IMAGE_DIMS = (950, 500)
@@ -20,7 +20,7 @@ transformImg = tf.Compose([tf.ToPILImage(),tf.ToTensor(),tf.Normalize((0.485, 0.
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu') 
 Net = torchvision.models.segmentation.deeplabv3_resnet50()  
-Net.classifier[4] = torch.nn.Conv2d(256, 2, kernel_size=(1, 1), stride=(1, 1)) 
+Net.classifier[4] = torch.nn.Conv2d(256, 6, kernel_size=(1, 1), stride=(1, 1)) 
 Net = Net.to(device)  # Set net to GPU or CPU
 Net.load_state_dict(torch.load(model_path)) # Load trained model
 
