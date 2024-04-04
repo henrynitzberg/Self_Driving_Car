@@ -6,7 +6,7 @@ import torch
 import torchvision.transforms as tf
 import matplotlib.pyplot as plt
 
-randnum = np.random.randint(2500)
+randnum = np.random.randint(500)
 # randnum = 38
 model_path = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/models/segmentation_model_2class.pt"
 image_path = f"C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_images/{randnum:05d}.png"

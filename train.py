@@ -13,7 +13,7 @@ def show(img):
     cv2.waitKey()
 
 # number of images used for training.
-NUM_DATA = 500
+NUM_DATA = 1000
 
 # dimensions of images used for training (width x height)
 #   original dims are 1914 x 1052
@@ -32,6 +32,7 @@ transformLab=tf.Compose([tf.ToPILImage(), tf.ToTensor()])
 models_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/models"
 labels_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_labels_vehicles_only"
 imgs_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_images"
+
 # for mac
 # labels_dir = "/Users/nitz/Developer/CS141/final_project/Self_Driving_Car/data/labels"
 # imgs_dir = "/Users/nitz/Developer/CS141/final_project/Self_Driving_Car/data/images"
@@ -54,7 +55,6 @@ def read_images_from_dir(directory, num_images, image_dims=None, read_gray=False
     for filename in tqdm(sorted(filelist)):
         filename = str(directory + "/" + filename)
         if read_gray:
-            print(filename)
             img = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
         else:
             img = cv2.imread(filename)
@@ -79,6 +79,9 @@ def pick_random_image():
     img = images[idx].copy()
     labeled = labels[idx].copy()
 
+    AnnMap = np.zeros(img.shape[0:2],np.float32)
+    AnnMap[labeled == 1] = 1
+
     # for testing STILL LABELS ENTIRE IMAGE AS VOID
     # height = IMAGE_DIMS[1]
     # width = IMAGE_DIMS[0]
@@ -86,11 +89,9 @@ def pick_random_image():
     # labeled[:,:int(width/2)] = 1
 
     img = transformImg(img)
-    labeled = transformLab(labeled)
+    AnnMap = transformLab(AnnMap)
 
-    # img = None
-    # labeled = labels[idx]
-    return (img, labeled)
+    return img, AnnMap
 
 # returns a batch: a list images and a corresponding list of annotated images
 def bake_batch():
@@ -113,7 +114,7 @@ loss_list = []
 
 # training
 model_name = "segmentation_model_2class.pt"
-for itr in tqdm(range(3000)):
+for itr in tqdm(range(5000)):
     imgs, lbs = bake_batch()
     imgs = torch.autograd.Variable(imgs, requires_grad=False).to(device)
     lbs = torch.autograd.Variable(lbs, requires_grad=False).to(device)
@@ -130,7 +131,7 @@ for itr in tqdm(range(3000)):
     iteration_list.append(itr)
     loss_list.append(Loss.item())  # Assuming Loss is a scalar tensor
 
-    if itr % 50 == 0:
+    if itr % 500 == 0:
         print("saving to " + models_dir + "/" + model_name)
         torch.save(Net.state_dict(), models_dir + "/" + model_name)
 

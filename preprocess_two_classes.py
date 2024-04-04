@@ -58,11 +58,11 @@ only_cars_and_trucks = []
 
 images = read_images_from_dir(labels_dir, num_images)
 
+counter = 1
 for image in tqdm(images):
     gray_two_class = cars_trucks_only(image)
     only_cars_and_trucks.append(gray_two_class)
 
-counter = 1
 for image in only_cars_and_trucks:
-    cv2.imwrite(write_dir + "/" + str(counter) + ".png", image)
+    cv2.imwrite(write_dir + "/" + f'{counter:05d}' + ".png", image)
     counter += 1
