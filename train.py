@@ -13,7 +13,7 @@ def show(img):
     cv2.waitKey()
 
 # number of images used for training.
-NUM_DATA = 1000
+NUM_DATA = 7500
 
 # dimensions of images used for training (width x height)
 #   original dims are 1914 x 1052
@@ -25,7 +25,8 @@ BATCH_SIZE = 3 # must be < NUM_DATA
 
 # transforms applied to the images and labels before forward pass of DCNN
 transformImg=tf.Compose([tf.ToPILImage(),tf.Resize((500,950)),tf.ToTensor(),tf.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))])
-transformLab=tf.Compose([tf.ToPILImage(),tf.Resize((500,950),tf.InterpolationMode.NEAREST), tf.ToTensor()])
+# transformLab=tf.Compose([tf.ToPILImage(),tf.Resize((500,950),tf.InterpolationMode.NEAREST), tf.ToTensor()])
+transformLab=tf.Compose([tf.ToTensor()])
 
 # TODO: don't hardcode paths
 # Note: if loading images from multiple label directories, can concat lists with '+'
@@ -77,17 +78,13 @@ labels = read_images_from_dir(labels_dir, NUM_DATA, image_dims=IMAGE_DIMS, read_
 def pick_random_image():
     idx = np.random.randint(0, NUM_DATA)
     img = images[idx].copy()
-    labeled = labels[idx].copy()
+    labeled = labels[idx].copy().astype(np.float32)
 
     unique_labels = np.unique(labeled)
 
     AnnMap = np.zeros(img.shape[0:2], np.float32)
     for label in unique_labels:
         AnnMap[labeled == label] = label
-
-    # plt.imshow(AnnMap, cmap='viridis')
-    # plt.show()
-    # show(AnnMap.astype(np.uint8))
 
     img = transformImg(img)
     AnnMap = transformLab(AnnMap)
@@ -109,7 +106,6 @@ device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
 Net = torchvision.models.segmentation.deeplabv3_resnet50(weights='DEFAULT')
 Net.classifier[4] = torch.nn.Conv2d(256, 6, 1)
 Net.aux_classifier[4] = torch.nn.Conv2d(256, 6, 1)
-# Net.classifier[4] = torch.nn.Conv2d(256, 6, kernel_size=(1, 1), stride=(1, 1)) # Change final layer to 6 classes
 Net=Net.to(device)
 optimizer=torch.optim.Adam(params=Net.parameters(),lr=LEARNING_RATE) # Create adam optimizer
 criterion = torch.nn.CrossEntropyLoss() # Set loss function
@@ -119,8 +115,8 @@ loss_list = []
 
 # training
 model_name = "segmentation_model_6class.pt"
-for itr in range(3000):
-    if itr % 500 == 0:
+for itr in tqdm(range(20000)):
+    if itr % 1000 == 0:
         print("saving to " + models_dir + "/" + model_name)
         torch.save(Net.state_dict(), models_dir + "/" + model_name)
 
@@ -136,8 +132,8 @@ for itr in range(3000):
     Loss.backward() # Backpropogate loss
     optimizer.step() # Apply gradient descent change to weight
 
-    if itr % 50 == 0:
-        print("Step: " + str(itr) + " Loss: " + str(Loss.item()))
+    # if itr % 50 == 0:
+    #     print("Step: " + str(itr) + " Loss: " + str(Loss.item()))
 
     iteration_list.append(itr)
     loss_list.append(Loss.item())  # Assuming Loss is a scalar tensor
