@@ -24,8 +24,8 @@ LEARNING_RATE = 1e-5
 BATCH_SIZE = 3 # must be < NUM_DATA
 
 # transforms applied to the images and labels before forward pass of DCNN
-transformImg=tf.Compose([tf.ToPILImage(),tf.ToTensor(),tf.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))])
-transformLab=tf.Compose([tf.ToPILImage(), tf.ToTensor()])
+transformImg=tf.Compose([tf.ToPILImage(),tf.Resize((500,950)),tf.ToTensor(),tf.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))])
+transformLab=tf.Compose([tf.ToPILImage(),tf.Resize((500,950),tf.InterpolationMode.NEAREST), tf.ToTensor()])
 
 # TODO: don't hardcode paths
 # Note: if loading images from multiple label directories, can concat lists with '+'
@@ -81,19 +81,13 @@ def pick_random_image():
 
     unique_labels = np.unique(labeled)
 
-    AnnMap = np.zeros_like(labeled, dtype=np.float32)
+    AnnMap = np.zeros(img.shape[0:2], np.float32)
     for label in unique_labels:
         AnnMap[labeled == label] = label
 
     # plt.imshow(AnnMap, cmap='viridis')
     # plt.show()
     # show(AnnMap.astype(np.uint8))
-
-    # for testing STILL LABELS ENTIRE IMAGE AS VOID
-    # height = IMAGE_DIMS[1]
-    # width = IMAGE_DIMS[0]
-    # labeled = np.zeros((height, width), dtype=np.uint8)
-    # labeled[:,:int(width/2)] = 1
 
     img = transformImg(img)
     AnnMap = transformLab(AnnMap)
@@ -107,12 +101,15 @@ def bake_batch():
     lbs = torch.zeros([BATCH_SIZE,IMAGE_DIMS[1],IMAGE_DIMS[0]])
     for i in range(BATCH_SIZE):
         imgs[i], lbs[i] = pick_random_image()
+        imgs[i] = imgs[i].unsqueeze(0)
     return imgs, lbs
 
 # Defining Network
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-Net = torchvision.models.segmentation.deeplabv3_resnet50()
-Net.classifier[4] = torch.nn.Conv2d(256, 6, kernel_size=(1, 1), stride=(1, 1)) # Change final layer to 6 classes
+Net = torchvision.models.segmentation.deeplabv3_resnet50(weights='DEFAULT')
+Net.classifier[4] = torch.nn.Conv2d(256, 6, 1)
+Net.aux_classifier[4] = torch.nn.Conv2d(256, 6, 1)
+# Net.classifier[4] = torch.nn.Conv2d(256, 6, kernel_size=(1, 1), stride=(1, 1)) # Change final layer to 6 classes
 Net=Net.to(device)
 optimizer=torch.optim.Adam(params=Net.parameters(),lr=LEARNING_RATE) # Create adam optimizer
 criterion = torch.nn.CrossEntropyLoss() # Set loss function
@@ -122,25 +119,29 @@ loss_list = []
 
 # training
 model_name = "segmentation_model_6class.pt"
-for itr in tqdm(range(3000)):
+for itr in range(3000):
+    if itr % 500 == 0:
+        print("saving to " + models_dir + "/" + model_name)
+        torch.save(Net.state_dict(), models_dir + "/" + model_name)
+
     imgs, lbs = bake_batch()
-    imgs = torch.autograd.Variable(imgs, requires_grad=False).to(device)
-    lbs = torch.autograd.Variable(lbs, requires_grad=False).to(device)
+    imgs2 = torch.autograd.Variable(imgs, requires_grad=False).to(device)
+    lbs2 = torch.autograd.Variable(lbs, requires_grad=False).to(device)
 
-    optimizer.zero_grad()
+    Pred = Net(imgs2)['out']
 
-    Pred = Net(imgs)['out']
+    Net.zero_grad()
 
-    Loss=criterion(Pred, lbs.long()) # Calculate cross entropy loss
+    Loss=criterion(Pred, lbs2.squeeze(1).long()) # Calculate cross entropy loss
     Loss.backward() # Backpropogate loss
     optimizer.step() # Apply gradient descent change to weight
+
+    if itr % 50 == 0:
+        print("Step: " + str(itr) + " Loss: " + str(Loss.item()))
 
     iteration_list.append(itr)
     loss_list.append(Loss.item())  # Assuming Loss is a scalar tensor
 
-    if itr % 500 == 0:
-        print("saving to " + models_dir + "/" + model_name)
-        torch.save(Net.state_dict(), models_dir + "/" + model_name)
 
 print("saving to " + models_dir + "/" + model_name)
 torch.save(Net.state_dict(), models_dir + "/" + model_name)

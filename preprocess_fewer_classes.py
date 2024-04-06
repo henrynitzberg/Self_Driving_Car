@@ -58,7 +58,7 @@ def cars_trucks_only(img):
 
 
     # 6 classes: (0=void,...,5=traffic_light)
-    gray_image = np.zeros_like(blue_channel, dtype=np.uint32)
+    gray_image = np.zeros_like(blue_channel, dtype=np.uint8)
     gray_image[vehicles_mask] = 1
     gray_image[road_mask] = 2
     gray_image[sidewalk_mask] = 3

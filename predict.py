@@ -19,8 +19,10 @@ image = cv2.resize(image, IMAGE_DIMS, interpolation= cv2.INTER_NEAREST)
 transformImg = tf.Compose([tf.ToPILImage(),tf.ToTensor(),tf.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))])
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu') 
-Net = torchvision.models.segmentation.deeplabv3_resnet50()  
-Net.classifier[4] = torch.nn.Conv2d(256, 6, kernel_size=(1, 1), stride=(1, 1)) 
+Net = torchvision.models.segmentation.deeplabv3_resnet50(weights='DEFAULT')  
+# Net.classifier[4] = torch.nn.Conv2d(256, 6, kernel_size=(1, 1), stride=(1, 1)) 
+Net.classifier[4] = torch.nn.Conv2d(256, 6, 1)
+Net.aux_classifier[4] = torch.nn.Conv2d(256, 6, 1)
 Net = Net.to(device)  # Set net to GPU or CPU
 Net.load_state_dict(torch.load(model_path)) # Load trained model
 
@@ -33,7 +35,9 @@ with torch.no_grad():
 
 prediction = tf.Resize((IMAGE_DIMS[1], IMAGE_DIMS[0]))(prediction[0])
 seg = torch.argmax(prediction, 0).cpu().detach().numpy()
+seg = seg * 50
 cv2.imshow("image", image)
+cv2.imshow("seg", seg.astype(np.uint8))
 # cv2.imshow("segmentation map", seg.astype(np.uint8))
 
 plt.imshow(seg, cmap='viridis')  # display image
