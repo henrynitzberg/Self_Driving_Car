@@ -7,36 +7,35 @@ import torchvision.transforms as tf
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
-# TODO: delete
-def show(img):
-    cv2.imshow("img", img)
-    cv2.waitKey()
+# name of trained model, option to print loss every 50 epochs, and option
+# to graph loss at the end of training
+MODEL_NAME = "segmentation_model_6class-2.pt"
+PRINT_LOSS = False
+GRAPH_LOSS = True
 
 # number of images used for training.
 NUM_DATA = 7500
 
-# dimensions of images used for training (width x height)
-#   original dims are 1914 x 1052
+# number of batches to train on
+EPOCHS = 20000
+
+# dimensions used for training (width x height)
+# (I think) smaller dimensions will generally yield a faster model
 IMAGE_DIMS = (950, 500)
 
 # params for pytorch DCNN
 LEARNING_RATE = 1e-5
-BATCH_SIZE = 3 # must be < NUM_DATA
+BATCH_SIZE = 3 # must be <= NUM_DATA and > 1
 
 # transforms applied to the images and labels before forward pass of DCNN
-transformImg=tf.Compose([tf.ToPILImage(),tf.Resize((500,950)),tf.ToTensor(),tf.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))])
-# transformLab=tf.Compose([tf.ToPILImage(),tf.Resize((500,950),tf.InterpolationMode.NEAREST), tf.ToTensor()])
+transformImg=tf.Compose([tf.ToPILImage(),tf.Resize((500,950)),tf.ToTensor(),
+                         tf.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))])
 transformLab=tf.Compose([tf.ToTensor()])
 
-# TODO: don't hardcode paths
-# Note: if loading images from multiple label directories, can concat lists with '+'
-models_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/models"
-labels_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_labels_reduced_classes"
-imgs_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_images"
-
-# for mac
-# labels_dir = "/Users/nitz/Developer/CS141/final_project/Self_Driving_Car/data/labels"
-# imgs_dir = "/Users/nitz/Developer/CS141/final_project/Self_Driving_Car/data/images"
+curr_dir = os.getcwd()
+labels_dir = os.path.join(curr_dir, "data/01_labels_reduced_classes")
+imgs_dir = os.path.join(curr_dir, "data/01_images")
+models_dir = os.path.join(curr_dir, "models")
 
 images = []
 # the labels are really segmentation maps, but I call them labels to be less verbose
@@ -44,8 +43,9 @@ labels = []
 
 # reads in specified number of images from a given directory, and 
 # optionally transforms them all to specified dimensions
+# optionally reads images in grayscale (height, width) rather than (3, height, width)
 # If the directory contains < num_images images, all of the images from the directory are read in
-# returns a list of np matrices
+# returns a list of openCV images (np arrays)
 def read_images_from_dir(directory, num_images, image_dims=None, read_gray=False):
     filelist = []
     images = []
@@ -68,13 +68,10 @@ def read_images_from_dir(directory, num_images, image_dims=None, read_gray=False
 
     return images.copy()
 
-# TODO: download actual images
 images = read_images_from_dir(imgs_dir, NUM_DATA, IMAGE_DIMS)
 labels = read_images_from_dir(labels_dir, NUM_DATA, image_dims=IMAGE_DIMS, read_gray=True)
 
-# show(images[9])
 # gets random image from training data, and corresponding annotated image
-# TODO: perform transformations
 def pick_random_image():
     idx = np.random.randint(0, NUM_DATA)
     img = images[idx].copy()
@@ -114,11 +111,10 @@ iteration_list = []
 loss_list = []
 
 # training
-model_name = "segmentation_model_6class-2.pt"
-for itr in tqdm(range(20000)):
+for itr in tqdm(range(EPOCHS)):
     if itr % 1000 == 0:
-        print("saving to " + models_dir + "/" + model_name)
-        torch.save(Net.state_dict(), models_dir + "/" + model_name)
+        print("saving to " + models_dir + "/" + MODEL_NAME)
+        torch.save(Net.state_dict(), models_dir + "/" + MODEL_NAME)
 
     imgs, lbs = bake_batch()
     imgs2 = torch.autograd.Variable(imgs, requires_grad=False).to(device)
@@ -132,19 +128,20 @@ for itr in tqdm(range(20000)):
     Loss.backward() # Backpropogate loss
     optimizer.step() # Apply gradient descent change to weight
 
-    # if itr % 50 == 0:
-    #     print("Step: " + str(itr) + " Loss: " + str(Loss.item()))
+    if (itr % 50 == 0) and PRINT_LOSS:
+        print("Step: " + str(itr) + " Loss: " + str(Loss.item()))
 
     iteration_list.append(itr)
     loss_list.append(Loss.item())  # Assuming Loss is a scalar tensor
 
 
-print("saving to " + models_dir + "/" + model_name)
-torch.save(Net.state_dict(), models_dir + "/" + model_name)
+print("saving to " + models_dir + "/" + MODEL_NAME)
+torch.save(Net.state_dict(), models_dir + "/" + MODEL_NAME)
 
-plt.plot(iteration_list, loss_list, label='Training Loss')
-plt.xlabel('Iteration')
-plt.ylabel('Loss')
-plt.title('Training Loss Over Iterations')
-plt.legend()
-plt.show()
+if GRAPH_LOSS:
+    plt.plot(iteration_list, loss_list, label='Training Loss')
+    plt.xlabel('Iteration')
+    plt.ylabel('Loss')
+    plt.title('Training Loss Over Iterations')
+    plt.legend()
+    plt.show()

@@ -19,20 +19,9 @@ def read_images_from_dir(directory, num_images):
 
     return images
 
-
-# def cars_trucks_only(img):
-#     height, width, _ = img.shape
-
-#     gray_image = np.zeros((height, width), dtype=np.uint8)
-
-#     for i in range(height):
-#         for j in range(width):
-#             pix = img[i,j]
-#             if pix[2] == 0 and pix[1] == 0 and (pix[0] == 142 or pix[0] == 70):
-#                 gray_image[i,j] = 1
-#     return gray_image
-
-def cars_trucks_only(img):
+# reduces number of classes to 6:
+# void, vehicles, road, sidewalk, person, traffic_light
+def reduce_classes(img):
     # Extract the BGR channels
     blue_channel = img[:, :, 0]
     green_channel = img[:, :, 1]
@@ -67,8 +56,6 @@ def cars_trucks_only(img):
 
     return gray_image
 
-# TODO: cars, trucks, street, sidewalk, sky
-
 num_images = 2500
 labels_dir_1 = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_labels"
 labels_dir_2 = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/02_labels/labels"
@@ -81,7 +68,7 @@ images = read_images_from_dir(labels_dir_1, num_images) + read_images_from_dir(l
 
 counter = 1
 for image in tqdm(images):
-    gray_two_class = cars_trucks_only(image)
+    gray_two_class = reduce_classes(image)
     only_cars_and_trucks.append(gray_two_class)
 
 for image in only_cars_and_trucks:
