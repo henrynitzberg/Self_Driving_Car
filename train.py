@@ -114,7 +114,7 @@ iteration_list = []
 loss_list = []
 
 # training
-model_name = "segmentation_model_6class.pt"
+model_name = "segmentation_model_6class-2.pt"
 for itr in tqdm(range(20000)):
     if itr % 1000 == 0:
         print("saving to " + models_dir + "/" + model_name)
