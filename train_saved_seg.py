@@ -1,8 +1,7 @@
-# list models in models folder, and let user choose which to keep training
-# TODO:
+# Script to continue training an existing segmentation model
+# Notes: datasets, class numbers, and epochs must be edited manually
 import os
 import numpy as np
-import cv2
 import torchvision.models.segmentation
 import torch
 import torchvision.transforms as tf

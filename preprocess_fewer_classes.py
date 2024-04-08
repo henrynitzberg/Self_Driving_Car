@@ -6,6 +6,9 @@ import torch
 import torchvision.transforms as tf
 from tqdm import tqdm
 
+ALL_LABELS = False
+CURR_DIR = os.getcwd()
+
 def read_images_from_dir(directory, num_images):
     images = []
     counter = num_images
@@ -56,21 +59,21 @@ def reduce_classes(img):
 
     return gray_image
 
-num_images = 2500
-labels_dir_1 = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_labels"
-labels_dir_2 = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/02_labels/labels"
-labels_dir_3 = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/03_labels/labels"
-write_dir = "C:/Users/nitzb/Developer/CS141/final_project/Self_Driving_Car/data/01_labels_reduced_classes"
+num_images = 1
+labels_dir_1 = os.path.join(CURR_DIR, "data/01_labels")
+if ALL_LABELS:
+    labels_dir_2 = os.path.join(CURR_DIR, "data/02_labels/labels")
+    labels_dir_3 = os.path.join(CURR_DIR, "data/03_labels/labels")
+write_dir = os.path.join(CURR_DIR, "data/01_labels_reduced_classes")
 images = []
 only_cars_and_trucks = []
 
-images = read_images_from_dir(labels_dir_1, num_images) + read_images_from_dir(labels_dir_2, num_images) + read_images_from_dir(labels_dir_3, num_images)
+images = read_images_from_dir(labels_dir_1, num_images)
+if ALL_LABELS:
+    images = images + read_images_from_dir(labels_dir_2, num_images) + read_images_from_dir(labels_dir_3, num_images)
 
 counter = 1
 for image in tqdm(images):
-    gray_two_class = reduce_classes(image)
-    only_cars_and_trucks.append(gray_two_class)
-
-for image in only_cars_and_trucks:
+    image = reduce_classes(image)
     cv2.imwrite(write_dir + "/" + f'{counter:05d}' + ".png", image)
     counter += 1
