@@ -37,10 +37,6 @@ labels_dir = os.path.join(curr_dir, "data/01_labels_reduced_classes")
 imgs_dir = os.path.join(curr_dir, "data/01_images")
 models_dir = os.path.join(curr_dir, "models")
 
-images = []
-# the labels are really segmentation maps, but I call them labels to be less verbose
-labels = []
-
 # reads in specified number of images from a given directory, and 
 # optionally transforms them all to specified dimensions
 # optionally reads images in grayscale (height, width) rather than (3, height, width)
