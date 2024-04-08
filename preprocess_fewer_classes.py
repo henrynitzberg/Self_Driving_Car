@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 ALL_LABELS = False
 CURR_DIR = os.getcwd()
+NUM_IMAGES = 2500
 
 def read_images_from_dir(directory, num_images):
     images = []
@@ -59,7 +60,6 @@ def reduce_classes(img):
 
     return gray_image
 
-num_images = 1
 labels_dir_1 = os.path.join(CURR_DIR, "data/01_labels")
 if ALL_LABELS:
     labels_dir_2 = os.path.join(CURR_DIR, "data/02_labels/labels")
@@ -68,9 +68,9 @@ write_dir = os.path.join(CURR_DIR, "data/01_labels_reduced_classes")
 images = []
 only_cars_and_trucks = []
 
-images = read_images_from_dir(labels_dir_1, num_images)
+images = read_images_from_dir(labels_dir_1, NUM_IMAGES)
 if ALL_LABELS:
-    images = images + read_images_from_dir(labels_dir_2, num_images) + read_images_from_dir(labels_dir_3, num_images)
+    images = images + read_images_from_dir(labels_dir_2, NUM_IMAGES) + read_images_from_dir(labels_dir_3, NUM_IMAGES)
 
 counter = 1
 for image in tqdm(images):
