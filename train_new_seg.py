@@ -28,8 +28,9 @@ LEARNING_RATE = 1e-5
 BATCH_SIZE = 3 # must be <= NUM_DATA and > 1
 
 # transforms applied to the images and labels before forward pass of DCNN
-transformImg=tf.Compose([tf.ToPILImage(),tf.Resize((500,950)),tf.ToTensor(),
-                         tf.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))])
+transformImg=tf.Compose([tf.ToPILImage(),tf.ToTensor(),
+                         tf.Normalize((0.485, 0.456, 0.406), 
+                                      (0.229, 0.224, 0.225))])
 transformLab=tf.Compose([tf.ToTensor()])
 
 curr_dir = os.getcwd()
