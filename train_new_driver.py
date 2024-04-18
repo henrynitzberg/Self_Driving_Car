@@ -6,6 +6,7 @@ import torch
 import torchvision.transforms as tf
 from tqdm import tqdm
 import matplotlib.pyplot as plt
+from driverNet import driverNet
 
 MODEL_NAME = "driver_model.pt"
 GRAPH_LOSS = True
@@ -60,73 +61,21 @@ def bake_batch():
     return images, controls
 
 
-# Input -> 
-# [conv2d, maxpool, ReLU]
-# [conv2d, maxpool, ReLU]
-# flatten
-# [linear, ReLU]
-# [linear, ReLU] 
-# -> output
-# TODO: write neural network class (custom)
-class driverNet(torch.nn.Module):
-    def __init__(self, numChannels, numClasses):
-        super(driverNet, self).__init__()
-        self.conv1 = torch.nn.Conv2d(in_channels=numChannels, out_channels=20, 
-                                    kernel_size=(5, 5))
-        self.relu1 = torch.nn.ReLU()
-        self.maxpool1 = torch.nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))
-		# initialize second set of CONV => RELU => POOL layers
-        self.conv2 = torch.nn.Conv2d(in_channels=20, out_channels=50,
-			kernel_size=(5, 5))
-        self.relu2 = torch.nn.ReLU()
-        self.maxpool2 = torch.nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))
-		# initialize first (and only) set of FC => RELU layers
-        self.fc1 = torch.nn.Linear(in_features=1427400, out_features=500)
-        self.relu3 = torch.nn.ReLU()
-		# initialize our softmax classifier
-        self.fc2 = torch.nn.Linear(in_features=500, out_features=numClasses)
-        self.relu4 = torch.nn.ReLU()
-
-    def forward(self, x):
-        x = self.conv1(x)
-        x = self.relu1(x)
-        x = self.maxpool1(x)
-        print(x.shape)
-
-        x = self.conv2(x)
-        x = self.relu2(x)
-        x = self.maxpool2(x)
-        print(x.shape)
-
-        x = torch.flatten(x)
-        print(x.shape)
-
-        x = self.fc1(x)
-        print(x.shape)
-
-        x = self.relu3(x)
-        print(x.shape)
-
-        x = self.fc2(x)
-        print(x.shape)
-
-        output = self.relu4(x)
-        print(x.shape)
-
-        return output
-
-
 data = read_in_data(data_dir, NUM_DATA, IMAGE_DIMS)
 image, controls = get_random_datum()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = driverNet(numChannels=1, numClasses=3).to(device)
+model = driverNet(numChannels=1, numClasses=3)
+model.to(device)
 opt = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
-lossFn = torch.nn.NLLLoss()
+lossFn = torch.nn.L1Loss()
 model.train()
-
-for ep in range(EPOCHS):
+pred = 0
+control = 0
+for ep in tqdm(range(EPOCHS)):
     if ep % 100 == 0:
+        print(pred)
+        print(control)
         print("saving to " + model_path)
         torch.save(model.state_dict(), model_path)
 
@@ -134,13 +83,14 @@ for ep in range(EPOCHS):
     for i in range(BATCH_SIZE):
         im = images[i]
         control = controls[i]
-        im.to(device)
-        control.to(device)
+        # im.to(device)
+        # control.to(device)
+        im2 = torch.autograd.Variable(im, requires_grad=False).to(device)
+        control2 = torch.autograd.Variable(control, requires_grad=False).to(device)
 
-        pred = model(im)
-        loss = lossFn(pred, control)
+        pred = model(im2)
+        loss = lossFn(pred, control2)
 
-        print(pred)
 
         opt.zero_grad()
         loss.backward()
