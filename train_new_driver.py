@@ -23,7 +23,7 @@ curr_dir = os.getcwd()
 data_dir = os.path.join(curr_dir, "data/01_labels_reduced_classes")
 model_path = os.path.join(curr_dir, "models", MODEL_NAME)
 
-# should return an array of tuples [(image, np.array([steering, accel_value, brake]))]
+# should return an array of tuples [(image, torch.tensor([steering, accel_value, brake]))]
 def read_in_data(dir, num_data, image_dims):
     data_list = []
     counter = num_data
@@ -32,7 +32,7 @@ def read_in_data(dir, num_data, image_dims):
         image = cv2.resize(image, image_dims, interpolation=cv2.INTER_NEAREST)
         # TODO: get real values
         # TODO: make sure real values are all positive
-        controls = np.array([0, 0, 0])
+        controls = torch.tensor([0, 0, 0])
         data_list.append((image, controls))
         counter -= 1
         if counter == 0:
@@ -93,3 +93,8 @@ class driverNet(torch.nn.Module):
 
 data = read_in_data(data_dir, NUM_DATA, IMAGE_DIMS)
 image, controls = get_random_datum()
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = driverNet(numChannels=3, classes=3).to(device)
+opt = Adam(mode.parameters(), lr=LEARNING_RATE)
+lossFn = nn.NLLLoss()
