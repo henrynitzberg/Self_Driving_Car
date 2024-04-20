@@ -8,17 +8,19 @@ class driverNet(torch.nn.Module):
         self.conv1 = torch.nn.Conv2d(in_channels=numChannels, out_channels=20, 
                                     kernel_size=(5, 5))
         self.relu1 = torch.nn.ReLU()
-        self.maxpool1 = torch.nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))
+        self.maxpool1 = torch.nn.MaxPool2d(kernel_size=(10, 10), stride=(10, 10))
 		# initialize second set of CONV => RELU => POOL layers
         self.conv2 = torch.nn.Conv2d(in_channels=20, out_channels=50,
 			kernel_size=(5, 5))
         self.relu2 = torch.nn.ReLU()
         self.maxpool2 = torch.nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))
 		# initialize first (and only) set of FC => RELU layers
-        self.fc1 = torch.nn.Linear(in_features=1427400, out_features=500)
+        self.fc1 = torch.nn.Linear(in_features=10500, out_features=2000)
         self.relu3 = torch.nn.ReLU()
 		# initialize our softmax classifier
-        self.fc2 = torch.nn.Linear(in_features=500, out_features=numClasses)
+        self.fc2 = torch.nn.Linear(in_features=2000, out_features=500)
+        self.fc3 = torch.nn.Linear(in_features=500, out_features=300)
+        self.fc4 = torch.nn.Linear(in_features=300, out_features=numClasses)
         self.relu4 = torch.nn.ReLU()
 
     def forward(self, x):
@@ -37,7 +39,9 @@ class driverNet(torch.nn.Module):
         x = self.relu3(x)
 
         x = self.fc2(x)
+        x = self.fc3(x)
+        x = self.fc4(x)
 
-        # output = self.relu4(x)
+        output = self.relu4(x)
 
-        return x
+        return output
