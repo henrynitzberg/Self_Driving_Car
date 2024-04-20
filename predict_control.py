@@ -1,15 +1,13 @@
 # Notes when imported:
 # you will need driverNet.py in the same directory, on the same level
 # you will need the model 'driver_model.pt' in the 'models' directory 
-# (that is, you will need a */models/driver_model.pt)
+# (that is, you will need a ./models/driver_model.pt)
 
 import os
 import numpy as np
 import cv2
-import torchvision.models.segmentation
 import torch
 import torchvision.transforms as tf
-import matplotlib.pyplot as plt
 from driverNet import driverNet
 
 curr_dir = os.getcwd()
