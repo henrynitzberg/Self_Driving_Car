@@ -3,3 +3,4 @@ models/*
 *.png
 *.jpeg
 *.jpg
+__pycache__/*
