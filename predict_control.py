@@ -11,8 +11,8 @@ import torchvision.transforms as tf
 from driverNet import driverNet
 
 curr_dir = os.getcwd()
-model_path = os.path.join(curr_dir, "models/driver_model-2.pt")
-# image_path = os.path.join(curr_dir, f"data/01_controls/0.178_0.690_0.690.png")
+model_path = os.path.join(curr_dir, "models/driver_model-3.pt")
+# image_path = os.path.join(curr_dir, f"data/01_controls/1_0.527_0.303_0.000.png")
 
 IMAGE_DIMS = (475, 250)
 transformImg = tf.ToTensor()
@@ -47,6 +47,8 @@ def to_gray(img):
     person_mask = np.logical_and(blue_channel == 60, green_channel == 20, red_channel == 220)
     # traffic_light (30, 170, 250)
     traffic_light_mask = np.logical_and(blue_channel == 30, green_channel == 170, red_channel == 250)
+    # lane markings (50, 234, 157)
+    lane_marking_mask = np.logical_and(blue_channel == 50, green_channel == 234, red_channel == 157)
 
     gray_image = np.zeros_like(blue_channel, dtype=np.uint8)
     gray_image[vehicles_mask] = 1
@@ -54,6 +56,7 @@ def to_gray(img):
     gray_image[sidewalk_mask] = 3
     gray_image[person_mask] = 4
     gray_image[traffic_light_mask] = 5
+    gray_image[lane_marking_mask] = 6
 
     return gray_image
 
