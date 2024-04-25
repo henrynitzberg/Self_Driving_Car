@@ -58,7 +58,7 @@ def to_gray(img):
     return gray_image
 
 def predict(img, CARLA=False):
-    img = cv2.resize(image, IMAGE_DIMS, interpolation=cv2.INTER_NEAREST)
+    img = cv2.resize(img, IMAGE_DIMS, interpolation=cv2.INTER_NEAREST)
     if CARLA:
         img = to_gray(img)
     img = transformImg(img)
