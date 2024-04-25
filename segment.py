@@ -9,10 +9,10 @@ import matplotlib.pyplot as plt
 # picks random image in the first X data to segment
 X = 2
 randnum = np.random.randint(1, X)
-# randnum = 38 # image with a nice picture of a truck
+randnum = 14 # image with a nice picture of a traffic light
 
 curr_dir = os.getcwd()
-model_path = os.path.join(curr_dir, "models/segmentation_model_6class.pt")
+model_path = os.path.join(curr_dir, "models/segmentation_model_6class-2.pt")
 image_path = os.path.join(curr_dir, f"data/01_images/{randnum:05d}.png")
 
 IMAGE_DIMS = (950, 500)
