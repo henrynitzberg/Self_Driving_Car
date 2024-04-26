@@ -5,3 +5,4 @@ models/*
 *.jpg
 __pycache__/
 *.py[cod]s
+test.py
