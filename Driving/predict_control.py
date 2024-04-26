@@ -1,14 +1,14 @@
 # Notes when imported:
-# you will need driverNet.py in the same directory, on the same level
-# you will need the model 'driver_model.pt' in the 'models' directory 
-# (that is, you will need a ./models/driver_model.pt)
+# you will need driverNetMk1.py in the same directory, on the same level
+# you will need the model 'driver_model.pt' in the 'models' directory
+# (that is, you will need a ../models/driver_model.pt)
 
 import os
 import numpy as np
 import cv2
 import torch
 import torchvision.transforms as tf
-from driverNet import driverNet
+from driverNetMk1 import driverNetMk1
 
 model_path = os.path.abspath("../models/driver_model-3.pt")
 
@@ -21,7 +21,7 @@ transformImg = tf.ToTensor()
 
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-model = driverNet(numChannels=1, numClasses=3).to(device)
+model = driverNetMk1(numChannels=1, numClasses=3).to(device)
 
 if (device == torch.device('cpu')):
     model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'))) # Load trained model

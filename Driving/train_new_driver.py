@@ -6,7 +6,7 @@ import torch
 import torchvision.transforms as tf
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-from driverNet import driverNet
+from driverNetMk1 import driverNetMk1
 
 MODEL_NAME = "driver_model-3.pt"
 GRAPH_LOSS = True
@@ -64,7 +64,7 @@ def bake_batch():
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = driverNet(numChannels=1, numClasses=3)
+model = driverNetMk1(numChannels=1, numClasses=3)
 model.to(device)
 opt = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 lossFn = torch.nn.L1Loss()
