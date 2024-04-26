@@ -1,10 +1,9 @@
-import torchvision.models.segmentation
 import torch
 import torchvision.transforms as tf
 
 class driverNetMk1(torch.nn.Module):
     def __init__(self, numChannels, numClasses):
-        super(driverNet, self).__init__()
+        super(driverNetMk1, self).__init__()
         self.conv1 = torch.nn.Conv2d(in_channels=numChannels, out_channels=20, 
                                     kernel_size=(5, 5))
         self.relu1 = torch.nn.ReLU()
