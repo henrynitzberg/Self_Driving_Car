@@ -6,8 +6,6 @@ import torch
 import torchvision.transforms as tf
 from tqdm import tqdm
 
-ALL_LABELS = False
-CURR_DIR = os.getcwd()
 NUM_IMAGES = 30000
 
 def read_images_from_dir(directory, num_images):
@@ -47,6 +45,8 @@ def convert_to_gray(filename, img):
     person_mask = np.logical_and(blue_channel == 60, green_channel == 20, red_channel == 220)
     # traffic_light (30, 170, 250)
     traffic_light_mask = np.logical_and(blue_channel == 30, green_channel == 170, red_channel == 250)
+    # lane markings (50, 234, 157)
+    lane_marking_mask = np.logical_and(blue_channel == 50, green_channel == 234, red_channel == 157)
 
     gray_image = np.zeros_like(blue_channel, dtype=np.uint8)
     gray_image[vehicles_mask] = 1
@@ -54,12 +54,14 @@ def convert_to_gray(filename, img):
     gray_image[sidewalk_mask] = 3
     gray_image[person_mask] = 4
     gray_image[traffic_light_mask] = 5
+    gray_image[lane_marking_mask] = 6
 
     return new_name, gray_image
 
 
-labels_dir_1 = os.path.join(CURR_DIR, "data/sem_town4_2")
-write_dir = os.path.join(CURR_DIR, "data/01_controls")
+labels_dir_1 = os.path.abspath("../data/sem_town4_2")
+write_dir = os.path.abspath("../data/02_controls")
+print(write_dir)
 
 images = []
 only_cars_and_trucks = []
@@ -68,5 +70,5 @@ images = read_images_from_dir(labels_dir_1, NUM_IMAGES)
 counter = 1
 for filename, image in tqdm(images):
     filename, image = convert_to_gray(filename, image)
-    cv2.imwrite(write_dir + "/" + filename, image)
+    cv2.imwrite(write_dir + "/" + str(counter) + "_" + filename, image)
     counter += 1

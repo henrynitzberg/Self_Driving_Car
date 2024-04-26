@@ -7,7 +7,6 @@ import torchvision.transforms as tf
 from tqdm import tqdm
 
 ALL_LABELS = True
-CURR_DIR = os.getcwd()
 NUM_IMAGES = 2500
 
 def read_images_from_dir(directory, num_images):
@@ -60,11 +59,11 @@ def reduce_classes(img):
 
     return gray_image
 
-labels_dir_1 = os.path.join(CURR_DIR, "data/01_labels")
+labels_dir_1 = os.path.abspath("../data/01_labels")
 if ALL_LABELS:
-    labels_dir_2 = os.path.join(CURR_DIR, "data/02_labels/labels")
-    labels_dir_3 = os.path.join(CURR_DIR, "data/03_labels/labels")
-write_dir = os.path.join(CURR_DIR, "data/01_labels_reduced_classes")
+    labels_dir_2 = os.path.abspath("../data/02_labels/labels")
+    labels_dir_3 = os.path.abspath("../data/03_labels/labels")
+write_dir = os.path.abspath("../data/01_labels_reduced_classes")
 images = []
 only_cars_and_trucks = []
 

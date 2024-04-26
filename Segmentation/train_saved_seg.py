@@ -21,7 +21,7 @@ def get_print_model():
     counter = 1
     print("")
     print("MODELS:")
-    for model in os.listdir(os.path.join(CURR_DIR, "models")):
+    for model in os.listdir(os.path.abspath("../models")):
         print("[" + str(counter) + "] "  + model)
         model_dict[counter] = model
         counter += 1
@@ -29,11 +29,11 @@ def get_print_model():
     model_num = input("Which model (input digit): ")
     return model_dict[int(model_num)]
 
-model = os.path.join(CURR_DIR, "models", get_print_model())
+model = os.path.abspath("../models/" + get_print_model())
 print("using: " + model)
 
-imgs_dir = os.path.join(CURR_DIR, "data", IMGS_DIR)
-labels_dir = os.path.join(CURR_DIR, "data", LABELS_DIR)
+imgs_dir = os.path.abspath("../data/" + IMGS_DIR)
+labels_dir = os.path.abspath("../data/" + LABELS_DIR)
 
 images = train.read_images_from_dir(imgs_dir, NUM_DATA, train.IMAGE_DIMS)
 labels = train.read_images_from_dir(imgs_dir, NUM_DATA, train.IMAGE_DIMS)

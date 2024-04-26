@@ -7,13 +7,11 @@ import torchvision.transforms as tf
 import matplotlib.pyplot as plt
 
 # picks random image in the first X data to segment
-X = 2
+X = 2500
 randnum = np.random.randint(1, X)
-randnum = 14 # image with a nice picture of a traffic light
 
-curr_dir = os.getcwd()
-model_path = os.path.join(curr_dir, "models/segmentation_model_6class-2.pt")
-image_path = os.path.join(curr_dir, f"data/01_images/{randnum:05d}.png")
+model_path = os.path.abspath("../models/segmentation_model_6class-2.pt")
+image_path = os.path.abspath(f"../data/01_images/{randnum:05d}.png")
 
 IMAGE_DIMS = (950, 500)
 
@@ -42,7 +40,7 @@ with torch.no_grad():
 
 prediction = tf.Resize((IMAGE_DIMS[1], IMAGE_DIMS[0]))(prediction[0])
 seg = torch.argmax(prediction, 0).cpu().detach().numpy()
-cv2.imshow("origional image", image)
+cv2.imshow("original image", image)
 cv2.imshow("gray segmentation map", (seg * 50).astype(np.uint8))
 
 plt.imshow(seg, cmap='viridis')  # visualy easier to understand

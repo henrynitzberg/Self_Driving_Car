@@ -8,7 +8,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 from driverNet import driverNet
 
-MODEL_NAME = "driver_model-2.pt"
+MODEL_NAME = "driver_model-3.pt"
 GRAPH_LOSS = True
 NUM_DATA = 30000
 EPOCHS = 300000
@@ -20,7 +20,7 @@ BATCH_SIZE = 3 # must be <= NUM_DATA and > 1
 transformImg=tf.Compose([tf.ToPILImage(),tf.ToTensor()])
 
 curr_dir = os.getcwd()
-data_dir = os.path.join(curr_dir, "data/01_controls")
+data_dir = os.path.join(curr_dir, "data/02_controls")
 model_path = os.path.join(curr_dir, "models", MODEL_NAME)
 
 # should return an array of tuples [(image, torch.tensor([steering, accel_value, brake]))]
@@ -31,8 +31,8 @@ def read_in_data(dir, num_data, image_dims):
         image = cv2.imread(os.path.join(dir, filename), cv2.IMREAD_GRAYSCALE)
         image = cv2.resize(image, image_dims, interpolation=cv2.INTER_NEAREST)
         carr = filename.split('_')
-        carr[2] = carr[2][:-4]
-        controls = torch.tensor([float(carr[0]), float(carr[1]), 0])
+        carr[3] = carr[3][:-4]
+        controls = torch.tensor([float(carr[1]), float(carr[2]), float(carr[3])])
         data_list.append((image, controls))
         counter -= 1
         if counter == 0:
