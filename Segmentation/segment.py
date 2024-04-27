@@ -9,8 +9,9 @@ import matplotlib.pyplot as plt
 # picks random image in the first X data to segment
 X = 2500
 randnum = np.random.randint(1, X)
+randnum = 1
 
-model_path = os.path.abspath("../models/segmentation_model_6class-2.pt")
+model_path = os.path.abspath("../models/segmentation_model_6class.pt")
 image_path = os.path.abspath(f"../data/01_images/{randnum:05d}.png")
 
 IMAGE_DIMS = (950, 500)
