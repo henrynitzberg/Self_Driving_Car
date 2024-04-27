@@ -13,8 +13,8 @@ from driverNetMk1 import driverNetMk1
 model_path = os.path.abspath("../models/driver_model-3.pt")
 
 # for testing for Henry
-image_path = os.path.abspath("../data/03_controls/2_0.448_0.345_0.0.png")
-image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+# image_path = os.path.abspath("../data/03_controls/2_0.448_0.345_0.0.png")
+# image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 
 IMAGE_DIMS = (475, 250)
 transformImg = tf.ToTensor()
@@ -72,6 +72,6 @@ def predict(img, CARLA=False):
     return [round(control_T[0].item(), 3), round(control_T[1].item(), 3), round(control_T[2].item(), 3)]
 
 # for testing for Henry
-print(predict(image, CARLA=False))
-cv2.imshow("segd image", image * 50)
-cv2.waitKey()
+# print(predict(image, CARLA=False))
+# cv2.imshow("segd image", image * 50)
+# cv2.waitKey()
