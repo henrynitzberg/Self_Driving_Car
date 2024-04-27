@@ -56,6 +56,8 @@ def to_gray(img):
 
     return gray_image
 
+# takes 2D np array representing a segmented image
+# returns control as list [steering, acceleration, brake] with each value [0 - 1]
 def predict(img, CARLA=False):
     img = cv2.resize(img, IMAGE_DIMS, interpolation=cv2.INTER_NEAREST)
     if CARLA:

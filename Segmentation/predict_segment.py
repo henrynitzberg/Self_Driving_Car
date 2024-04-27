@@ -24,6 +24,8 @@ else:
 
 Net.eval()
 
+# takes 3D np array representing image
+# returns 2D np array representing segmented version of image
 def predict_segment(image):
     image = cv2.resize(image, IMAGE_DIMS, interpolation=cv2.INTER_NEAREST)
     to_segment = transformImg(image)
