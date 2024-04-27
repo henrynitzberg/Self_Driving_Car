@@ -70,5 +70,5 @@ images = read_images_from_dir(labels_dir_1, NUM_IMAGES)
 counter = 1
 for filename, image in tqdm(images):
     filename, image = convert_to_gray(filename, image)
-    cv2.imwrite(write_dir + "/" + str(counter) + "_" + filename, image)
+    cv2.imwrite(write_dir + "/" + filename, image)
     counter += 1
