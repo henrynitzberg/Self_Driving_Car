@@ -7,9 +7,9 @@ import torchvision.transforms as tf
 import matplotlib.pyplot as plt
 
 # picks random image in the first X data to segment
-X = 2500
+# X = 2500
 # randnum = np.random.randint(1, X)
-randnum = 439 
+# randnum = 439 
 
 # info relevant to model (actually image dims are not fixed)
 IMAGE_DIMS = (475, 250)
@@ -20,7 +20,6 @@ model_path = os.path.abspath("../models/segmentation_model_4class.pt")
 # for testing
 # image_path = os.path.abspath(f"../data/01_images/{randnum:05d}.png")
 # image_path = os.path.abspath(f"../data/CARLA_toSeg/rgb/1714229204409982800_0.450_0.750_0.000.png")
-
 # image = cv2.imread(image_path)
 # image = cv2.resize(image, IMAGE_DIMS, interpolation=cv2.INTER_NEAREST)
 
