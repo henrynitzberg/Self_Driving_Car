@@ -10,23 +10,17 @@ import torch
 import torchvision.transforms as tf
 from driverNetMk1 import driverNetMk1
 
-model_path = os.path.abspath("../models/driver_model-3.pt")
-
-# for testing for Henry
-# image_path = os.path.abspath("../data/03_controls/2_0.448_0.345_0.0.png")
-# image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-
 IMAGE_DIMS = (475, 250)
 transformImg = tf.ToTensor()
-
+MODEL_PATH = os.path.abspath("../models/highway_driver-3.pt")
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 model = driverNetMk1(numChannels=1, numClasses=3).to(device)
 
 if (device == torch.device('cpu')):
-    model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'))) # Load trained model
+    model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device('cpu'))) # Load trained model
 else:
-    model.load_state_dict(torch.load(model_path)) # Load trained model
+    model.load_state_dict(torch.load(MODEL_PATH)) # Load trained model
 
 model.eval()
 
@@ -73,7 +67,3 @@ def predict(img, CARLA=False):
 
     return [round(control_T[0].item(), 3), round(control_T[1].item(), 3), round(control_T[2].item(), 3)]
 
-# for testing for Henry
-# print(predict(image, CARLA=False))
-# cv2.imshow("segd image", image * 50)
-# cv2.waitKey()

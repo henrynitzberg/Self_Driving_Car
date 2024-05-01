@@ -36,44 +36,18 @@ def avg_steering(data):
     return avg / len(data)
 
 def adjust_average(images):
-    thresh = .01
-    lefts = []
-    straights = []
-    rights = []
+    data = []
     for filename, image in images:
         control = name_as_control(filename)
-        if control[0] < .5:
-            lefts.append((control, image))
-        elif control[0] > .5:
-            rights.append((control, image))
-        elif control[0] == .5:
-            straights.append((control, image))
-    
-    if ((avg_steering(rights) * len(rights) + avg_steering(lefts) * len(lefts)) / (len(lefts) + len(rights))) < .5 - thresh:
-        # remove lefts until within thresh
-        while ((avg_steering(rights) * len(rights) + avg_steering(lefts) * len(lefts)) / (len(lefts) + len(rights))) < .5 - thresh:
-            randidx = np.random.randint(len(lefts) - 1)
-            lefts.pop(randidx)
-    elif ((avg_steering(rights) * len(rights) + avg_steering(lefts) * len(lefts)) / (len(lefts) + len(rights))) > .5 + thresh:
-        # remove rights until within thresh
-        while ((avg_steering(rights) * len(rights) + avg_steering(lefts) * len(lefts)) / (len(lefts) + len(rights))) > .5 + thresh:
-            randidx = np.random.randint(len(rights) - 1)
-            rights.pop(randidx)
-    
-    data = []
-    for control, image in lefts:
-        data.append((control_to_filename(control), image))
-    for control, image in rights:
-        data.append((control_to_filename(control), image))
-    for control, image in straights:
         data.append((control_to_filename(control), image))
 
-    print((avg_steering(rights) * len(rights) + avg_steering(lefts) * len(lefts)) / (len(lefts) + len(rights)))
+        flipped_image = cv2.flip(image, 1)
+        flipped_control = control.copy()
+        flipped_control[0] = 1 - flipped_control[0]
+
+        data.append((control_to_filename(flipped_control), flipped_image))
 
     return data
-
-    
-
 
 
 def control_to_filename(control):
@@ -121,14 +95,17 @@ def convert_to_gray(filename, img, convert_name=False):
     return new_name, gray_image
 
 
-labels_dir_1 = os.path.abspath("../data/sem_town4_2")
-write_dir = os.path.abspath("../data/03_controls")
+labels_dir_1 = os.path.abspath("../data/highway_noTraffic/left_car/sem")
+labels_dir_2 = os.path.abspath("../data/highway_noTraffic/right_car/sem")
+write_dir = os.path.abspath("../data/highway_noTraffic/sem_toTrain_adjusted")
 
 images = []
 only_cars_and_trucks = []
 
 images = read_images_from_dir(labels_dir_1, NUM_IMAGES)
+images += read_images_from_dir(labels_dir_2, NUM_IMAGES)
 images = adjust_average(images)
+
 counter = 1
 for filename, image in tqdm(images):
     filename, image = convert_to_gray(filename, image)

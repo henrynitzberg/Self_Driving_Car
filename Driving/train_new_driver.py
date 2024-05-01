@@ -8,10 +8,10 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 from driverNetMk1 import driverNetMk1
 
-MODEL_NAME = "driver_model-3.pt"
+MODEL_NAME = "highway_driver-3.pt"
 GRAPH_LOSS = True
 NUM_DATA = 30000
-EPOCHS = 100000
+EPOCHS = 12000
 #         (width x height)
 IMAGE_DIMS = (475, 250)
 LEARNING_RATE = 1e-5
@@ -19,7 +19,7 @@ BATCH_SIZE = 3 # must be <= NUM_DATA and > 1
 
 transformImg=tf.Compose([tf.ToPILImage(),tf.ToTensor()])
 
-data_dir = os.path.abspath("../data/03_controls")
+data_dir = os.path.abspath("../data/highway_noTraffic/sem_toTrain_adjusted")
 model_path = os.path.abspath("../models/" + MODEL_NAME)
 
 # should return an array of tuples [(image, torch.tensor([steering, accel_value, brake]))]
@@ -29,10 +29,12 @@ def read_in_data(dir, num_data, image_dims):
     for filename in tqdm(os.listdir(dir)):
         image = cv2.imread(os.path.join(dir, filename), cv2.IMREAD_GRAYSCALE)
         image = cv2.resize(image, image_dims, interpolation=cv2.INTER_NEAREST)
+
         carr = filename.split('_')
         # assuming first num in name is timestamp/useless num
         carr[3] = carr[3][:-4]
         controls = torch.tensor([float(carr[1]), float(carr[2]), float(carr[3])])
+
         data_list.append((image, controls))
         counter -= 1
         if counter == 0:
@@ -92,7 +94,7 @@ for ep in tqdm(range(EPOCHS)):
         iteration_list.append(ep)
         loss_list.append(loss.item())  # Assuming Loss is a scalar tensor
     
-    if ep % 5000 == 0:
+    if ep % 1000 == 0:
         print(pred)
         print(control)
         print("saving to " + model_path)

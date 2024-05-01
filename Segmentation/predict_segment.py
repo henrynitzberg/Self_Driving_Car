@@ -6,22 +6,11 @@ import torch
 import torchvision.transforms as tf
 import matplotlib.pyplot as plt
 
-# picks random image in the first X data to segment
-# X = 2500
-# randnum = np.random.randint(1, X)
-# randnum = 439 
-
 # info relevant to model (actually image dims are not fixed)
 IMAGE_DIMS = (475, 250)
 NUM_CLASSES = 5
+MODEL_PATH = os.path.abspath("../models/segmentation_model_5class.pt")
 
-model_path = os.path.abspath("../models/segmentation_model_5class.pt")
-
-# for testing
-# image_path = os.path.abspath(f"../data/01_images/{randnum:05d}.png")
-# image_path = os.path.abspath(f"../data/CARLA_toSeg/rgb/1714229204409982800_0.450_0.750_0.000.png")
-# image = cv2.imread(image_path)
-# image = cv2.resize(image, IMAGE_DIMS, interpolation=cv2.INTER_NEAREST)
 
 transformImg = tf.Compose([tf.ToPILImage(),tf.ToTensor(),tf.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))])
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu') 
@@ -30,9 +19,9 @@ Net.classifier[4] = torch.nn.Conv2d(256, NUM_CLASSES, 1)
 Net.aux_classifier[4] = torch.nn.Conv2d(256, NUM_CLASSES, 1)
 Net = Net.to(device)  # Set net to GPU or CPU
 if (device == torch.device('cpu')):
-    Net.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'))) # Load trained model
+    Net.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device('cpu'))) # Load trained model
 else:
-    Net.load_state_dict(torch.load(model_path)) # Load trained model
+    Net.load_state_dict(torch.load(MODEL_PATH)) # Load trained model
 
 Net.eval()
 
@@ -46,10 +35,4 @@ def predict_segment(image):
         prediction = Net(to_segment)['out']  # Run net
     return prediction
 
-# for testing
-# prediction = predict_segment(image)
-# prediction = tf.Resize((IMAGE_DIMS[1], IMAGE_DIMS[0]))(prediction[0])
-# seg = torch.argmax(prediction, 0).cpu().detach().numpy()
-# cv2.imshow("original image", image)
-# cv2.imshow("gray segmentation map", (seg * 30).astype(np.uint8))
-# cv2.waitKey()
+
