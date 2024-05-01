@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 IMAGE_DIMS = (475, 250)
 NUM_CLASSES = 5
 
-model_path = os.path.abspath("../models/segmentation_model_4class.pt")
+model_path = os.path.abspath("../models/segmentation_model_5class.pt")
 
 # for testing
 # image_path = os.path.abspath(f"../data/01_images/{randnum:05d}.png")

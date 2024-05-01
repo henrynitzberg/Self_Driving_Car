@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 # name of trained model, option to print loss every 50 epochs, and option
 # to graph loss at the end of training
-MODEL_NAME = "segmentation_model_4class.pt"
+MODEL_NAME = "segmentation_model_5class-2.pt"
 PRINT_LOSS = False
 GRAPH_LOSS = True
 
