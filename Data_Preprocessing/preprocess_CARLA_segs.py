@@ -21,13 +21,75 @@ def read_images_from_dir(directory, num_images):
 
     return images
 
+def name_as_control(filename):
+    name_arr = filename.split("_")
+    name_arr[3] = name_arr[3][:-4]
+    control = [float(name_arr[1]), float(name_arr[2]), float(name_arr[3])]
+    return control
+
+def avg_steering(data):
+    avg = 0.0
+    if len(data) == 0:
+        return .5
+    for control, _ in data:
+        avg += control[0]
+    return avg / len(data)
+
+def adjust_average(images):
+    thresh = .01
+    lefts = []
+    straights = []
+    rights = []
+    for filename, image in images:
+        control = name_as_control(filename)
+        if control[0] < .5:
+            lefts.append((control, image))
+        elif control[0] > .5:
+            rights.append((control, image))
+        elif control[0] == .5:
+            straights.append((control, image))
+    
+    if ((avg_steering(rights) * len(rights) + avg_steering(lefts) * len(lefts)) / (len(lefts) + len(rights))) < .5 - thresh:
+        # remove lefts until within thresh
+        while ((avg_steering(rights) * len(rights) + avg_steering(lefts) * len(lefts)) / (len(lefts) + len(rights))) < .5 - thresh:
+            randidx = np.random.randint(len(lefts) - 1)
+            lefts.pop(randidx)
+    elif ((avg_steering(rights) * len(rights) + avg_steering(lefts) * len(lefts)) / (len(lefts) + len(rights))) > .5 + thresh:
+        # remove rights until within thresh
+        while ((avg_steering(rights) * len(rights) + avg_steering(lefts) * len(lefts)) / (len(lefts) + len(rights))) > .5 + thresh:
+            randidx = np.random.randint(len(rights) - 1)
+            rights.pop(randidx)
+    
+    data = []
+    for control, image in lefts:
+        data.append((control_to_filename(control), image))
+    for control, image in rights:
+        data.append((control_to_filename(control), image))
+    for control, image in straights:
+        data.append((control_to_filename(control), image))
+
+    print((avg_steering(rights) * len(rights) + avg_steering(lefts) * len(lefts)) / (len(lefts) + len(rights)))
+
+    return data
+
+    
+
+
+
+def control_to_filename(control):
+    new_name = str(control[0]) + "_" + str(control[1]) + "_" + str(control[2]) + ".png"
+    return new_name
+
 def convert_filename(filename):
     name_arr = filename.split("_")
     new_name = str(name_arr[1]) + "_" + str(name_arr[2]) + "_" + str(name_arr[3])
     return new_name
 
-def convert_to_gray(filename, img):
-    new_name = convert_filename(filename)
+
+def convert_to_gray(filename, img, convert_name=False):
+    new_name = filename
+    if convert_name:
+        new_name = convert_filename(filename)
     
     blue_channel = img[:, :, 0]
     green_channel = img[:, :, 1]
@@ -60,15 +122,15 @@ def convert_to_gray(filename, img):
 
 
 labels_dir_1 = os.path.abspath("../data/sem_town4_2")
-write_dir = os.path.abspath("../data/02_controls")
-print(write_dir)
+write_dir = os.path.abspath("../data/03_controls")
 
 images = []
 only_cars_and_trucks = []
 
 images = read_images_from_dir(labels_dir_1, NUM_IMAGES)
+images = adjust_average(images)
 counter = 1
 for filename, image in tqdm(images):
     filename, image = convert_to_gray(filename, image)
-    cv2.imwrite(write_dir + "/" + filename, image)
+    cv2.imwrite(write_dir + "/" + str(counter) + "_" + filename, image)
     counter += 1
