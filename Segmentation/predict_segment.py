@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 # info relevant to model (actually image dims are not fixed)
 IMAGE_DIMS = (475, 250)
 NUM_CLASSES = 5
-MODEL_PATH = os.path.abspath("../models/segmentation_model_5class.pt")
+MODEL_PATH = os.path.abspath("../models/segmentation_model_5class_camvid+carla-1.pt")
 
 
 transformImg = tf.Compose([tf.ToPILImage(),tf.ToTensor(),tf.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))])

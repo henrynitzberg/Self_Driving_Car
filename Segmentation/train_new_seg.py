@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 # name of trained model, option to print loss every 50 epochs, and option
 # to graph loss at the end of training
-MODEL_NAME = "segmentation_model_5class-2.pt"
+MODEL_NAME = "segmentation_model_5class_camvid+carla-1.pt"
 PRINT_LOSS = False
 GRAPH_LOSS = True
 
@@ -17,7 +17,7 @@ GRAPH_LOSS = True
 NUM_DATA = 30000
 
 # number of batches to train on
-EPOCHS = 50000
+EPOCHS = 20000
 
 # dimensions used for training (width x height)
 # (I think) smaller dimensions will generally yield a faster model
@@ -34,8 +34,8 @@ transformImg=tf.Compose([tf.ToPILImage(),tf.ToTensor(),
                                       (0.229, 0.224, 0.225))])
 transformLab=tf.Compose([tf.ToTensor()])
 
-labels_dir = os.path.abspath("../data/CARLA_labels_4class")
-imgs_dir = os.path.abspath("../data/CARLA_toSeg/rgb")
+labels_dir = os.path.abspath("../data/camVid/processed/seg")
+imgs_dir = os.path.abspath("../data/camVid/processed/rgb")
 models_dir = os.path.abspath("../models")
 
 # reads in specified number of images from a given directory, and 
