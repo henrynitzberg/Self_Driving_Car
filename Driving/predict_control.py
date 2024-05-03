@@ -12,7 +12,7 @@ from driverNetMk1 import driverNetMk1
 
 IMAGE_DIMS = (475, 250)
 transformImg = tf.ToTensor()
-MODEL_PATH = os.path.abspath("../models/highway_driver_traffic-2.pt")
+MODEL_PATH = os.path.abspath("../models/highway_driver-3.pt")
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 model = driverNetMk1(numChannels=1, numClasses=3).to(device)
