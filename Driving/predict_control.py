@@ -12,7 +12,7 @@ from driverNetMk1 import driverNetMk1
 
 IMAGE_DIMS = (475, 250)
 transformImg = tf.ToTensor()
-MODEL_PATH = os.path.abspath("../models/highway_driver-3.pt")
+MODEL_PATH = os.path.abspath("../models/highway_driver_traffic-2.pt")
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 model = driverNetMk1(numChannels=1, numClasses=3).to(device)
@@ -38,9 +38,9 @@ def to_gray(img):
     # sidewalk (232, 35, 244)
     sidewalk_mask = np.logical_and(blue_channel == 232, green_channel == 35, red_channel == 244)
     # person (60, 20, 220)
-    person_mask = np.logical_and(blue_channel == 60, green_channel == 20, red_channel == 220)
+    # person_mask = np.logical_and(blue_channel == 60, green_channel == 20, red_channel == 220)
     # traffic_light (30, 170, 250)
-    traffic_light_mask = np.logical_and(blue_channel == 30, green_channel == 170, red_channel == 250)
+    # traffic_light_mask = np.logical_and(blue_channel == 30, green_channel == 170, red_channel == 250)
     # lane markings (50, 234, 157)
     lane_marking_mask = np.logical_and(blue_channel == 50, green_channel == 234, red_channel == 157)
 
@@ -48,9 +48,9 @@ def to_gray(img):
     gray_image[vehicles_mask] = 1
     gray_image[road_mask] = 2
     gray_image[sidewalk_mask] = 3
-    gray_image[person_mask] = 4
-    gray_image[traffic_light_mask] = 5
-    gray_image[lane_marking_mask] = 6
+    # gray_image[person_mask] = 4
+    # gray_image[traffic_light_mask] = 5
+    gray_image[lane_marking_mask] = 4
 
     return gray_image
 
