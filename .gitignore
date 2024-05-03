@@ -6,3 +6,4 @@ models/*
 __pycache__/
 *.py[cod]s
 test.py
+**/out_sem/
