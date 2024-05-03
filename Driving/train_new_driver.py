@@ -8,10 +8,10 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 from driverNetMk1 import driverNetMk1
 
-MODEL_NAME = "highway_driver-3.pt"
+MODEL_NAME = "highway_driver_traffic-2.pt"
 GRAPH_LOSS = True
 NUM_DATA = 30000
-EPOCHS = 12000
+EPOCHS = 100000
 #         (width x height)
 IMAGE_DIMS = (475, 250)
 LEARNING_RATE = 1e-5
@@ -19,7 +19,7 @@ BATCH_SIZE = 3 # must be <= NUM_DATA and > 1
 
 transformImg=tf.Compose([tf.ToPILImage(),tf.ToTensor()])
 
-data_dir = os.path.abspath("../data/highway_noTraffic/sem_toTrain_adjusted")
+data_dir = os.path.abspath("../data/traffic_highway_training/sem_toTrain_adjusted")
 model_path = os.path.abspath("../models/" + MODEL_NAME)
 
 # should return an array of tuples [(image, torch.tensor([steering, accel_value, brake]))]

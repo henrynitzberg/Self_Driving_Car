@@ -47,6 +47,10 @@ def adjust_average(images):
 
         data.append((control_to_filename(flipped_control), flipped_image))
 
+        if control[2] > 0:
+            data.append((control_to_filename(control), image))
+            data.append((control_to_filename(flipped_control), flipped_image))
+        
     return data
 
 
@@ -78,9 +82,9 @@ def convert_to_gray(filename, img, convert_name=False):
     # sidewalk (232, 35, 244)
     sidewalk_mask = np.logical_and(blue_channel == 232, green_channel == 35, red_channel == 244)
     # person (60, 20, 220)
-    person_mask = np.logical_and(blue_channel == 60, green_channel == 20, red_channel == 220)
+    # person_mask = np.logical_and(blue_channel == 60, green_channel == 20, red_channel == 220)
     # traffic_light (30, 170, 250)
-    traffic_light_mask = np.logical_and(blue_channel == 30, green_channel == 170, red_channel == 250)
+    # traffic_light_mask = np.logical_and(blue_channel == 30, green_channel == 170, red_channel == 250)
     # lane markings (50, 234, 157)
     lane_marking_mask = np.logical_and(blue_channel == 50, green_channel == 234, red_channel == 157)
 
@@ -88,16 +92,16 @@ def convert_to_gray(filename, img, convert_name=False):
     gray_image[vehicles_mask] = 1
     gray_image[road_mask] = 2
     gray_image[sidewalk_mask] = 3
-    gray_image[person_mask] = 4
-    gray_image[traffic_light_mask] = 5
-    gray_image[lane_marking_mask] = 6
+    # gray_image[person_mask] = 4
+    # gray_image[traffic_light_mask] = 5
+    gray_image[lane_marking_mask] = 4
 
     return new_name, gray_image
 
 
-labels_dir_1 = os.path.abspath("../data/highway_noTraffic/left_car/sem")
-labels_dir_2 = os.path.abspath("../data/highway_noTraffic/right_car/sem")
-write_dir = os.path.abspath("../data/highway_noTraffic/sem_toTrain_adjusted")
+labels_dir_1 = os.path.abspath("../data/traffic_highway_training/left_car/sem")
+labels_dir_2 = os.path.abspath("../data/traffic_highway_training/right_car/sem")
+write_dir = os.path.abspath("../data/traffic_highway_training/sem_toTrain_adjusted")
 
 images = []
 only_cars_and_trucks = []
