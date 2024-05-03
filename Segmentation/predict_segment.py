@@ -33,6 +33,8 @@ def predict_segment(image):
     to_segment = torch.autograd.Variable(to_segment, requires_grad=False).to(device).unsqueeze(0)
     with torch.no_grad():
         prediction = Net(to_segment)['out']  # Run net
+    prediction = tf.Resize((IMAGE_DIMS[1], IMAGE_DIMS[0]))(prediction[0])
+    prediction = torch.argmax(prediction, 0).cpu().detach().numpy().astype(np.uint8)
     return prediction
 
 
