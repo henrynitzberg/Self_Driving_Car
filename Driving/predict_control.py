@@ -21,7 +21,7 @@ if (device == torch.device('cpu')):
     model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device('cpu'))) # Load trained model
 else:
     model.load_state_dict(torch.load(MODEL_PATH)) # Load trained model
-
+ 
 model.eval()
 
 def to_gray(img):

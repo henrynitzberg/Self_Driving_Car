@@ -7,4 +7,5 @@ __pycache__/
 *.py[cod]s
 test.py
 **/out_sem/
-testPredict.py
+testPredict*
+test*
