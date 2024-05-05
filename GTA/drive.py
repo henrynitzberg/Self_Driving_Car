@@ -43,8 +43,6 @@ for i in range(frames):
 
     # "driving"
     drive(control)
-    if i % 3 == 0:
-        ReleaseKey(W)
 
     cv2.imshow('frame', frame)
     cv2.imshow('segmented frame', seg * 40)
