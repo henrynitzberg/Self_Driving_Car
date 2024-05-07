@@ -1,5 +1,5 @@
-from testPredictSegment import predict_segment
-from testPredictControl import predict_control
+from PredictSegment import predict_segment
+from PredictControl import predict_control
 from getFrame import getFrame
 from sendControl import W, A, S, D, PressKey, ReleaseKey
 import cv2
