@@ -8,7 +8,7 @@ import numpy as np
 import cv2
 import torch
 import torchvision.transforms as tf
-from testNetMk1 import driverNetMk1
+from NetMk1 import driverNetMk1
 
 IMAGE_DIMS = (475, 250)
 transformImg = tf.ToTensor()

@@ -5,6 +5,8 @@ from sendControl import W, A, S, D, PressKey, ReleaseKey
 import cv2
 import time
 
+DRIVE = False
+
 def drive(control):
     driveKey = W
     steerKey = S
@@ -42,7 +44,8 @@ for i in range(frames):
     print(control)
 
     # "driving"
-    drive(control)
+    if DRIVE:
+        drive(control)
 
     cv2.imshow('frame', frame)
     cv2.imshow('segmented frame', seg * 40)
