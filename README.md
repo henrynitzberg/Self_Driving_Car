@@ -43,7 +43,7 @@ We'll outline everything you need, but you can also follow this video [here](htt
 
 1. You might be able to run directly in VSCode, but I have been using Jupyter Notebook, so run `jupyter notebook` in conda.
 2. Once a tab opens, click into Driving > carla_control_2.ipynb
-3. Run your CARLA installation.
+3. Run CARLAUE4 or whatever the CARLA executable is.
 4. Only once it loads, you can then run all the cells until 'traffic manager setup'
 5. Traffic manager setup will run it in synchronous mode, which may make the CARLA window inaccessible. That's normal as a spectator hasn't been set up yet.
 6. Once you've taken a breather, run traffic manager setup
