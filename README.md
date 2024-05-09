@@ -24,6 +24,7 @@ To get the most up-to-date version, our repository is [here](https://github.com/
 ## CARLA Installation
 
 Follow the CARLA installation from the docs. We use the current latest release of CARLA, v0.9.15. You can find it [here](https://github.com/carla-simulator/carla/blob/master/Docs/download.md)
+If you are asked to create a conda environment, look at 'environment setup' first.
 If you want, you can also follow this video [here](https://www.youtube.com/watch?v=jIK9sanumuU). This is an installation of 0.9.14, but it remains the same. You don't need the "additional maps," though we have it, so if something goes wrong, try installing it and then running it again(but you really shouldn't need to)
 
 Be warned, this is a very sizable installation. With additional maps, this can go up to 70+ GB, though the base installation is just 20GB.
@@ -32,7 +33,7 @@ You can open your CARLA installation by going into CARLA > WindowsNoEditor > CAR
 
 ## Environment Setup
 
-We'll outline everything you need, but you can also follow this video [here](https://www.youtube.com/watch?v=zZ8s_qrKYGE) to set up the basic Python configuration, except when asked to make your own Conda environment, go to step 3.
+We'll outline everything you need, but you can also follow this video [here](https://www.youtube.com/watch?v=zZ8s_qrKYGE) to set up the basic Python configuration, except when asked to make your own Conda environment, go to step 3 -- we have added many other dependencies.
 
 1. Install Anaconda or open it if you have it. (you can also do this in terminal, if you prefer, but conda is just easier)
 2. cd into the directory of this README.
