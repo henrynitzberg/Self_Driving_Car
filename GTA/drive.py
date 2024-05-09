@@ -1,9 +1,11 @@
-from testPredictSegment import predict_segment
-from testPredictControl import predict_control
+from PredictSegment import predict_segment
+from PredictControl import predict_control
 from getFrame import getFrame
 from sendControl import W, A, S, D, PressKey, ReleaseKey
 import cv2
 import time
+
+DRIVE = False
 
 def drive(control):
     driveKey = W
@@ -42,7 +44,8 @@ for i in range(frames):
     print(control)
 
     # "driving"
-    drive(control)
+    if DRIVE:
+        drive(control)
 
     cv2.imshow('frame', frame)
     cv2.imshow('segmented frame', seg * 40)
