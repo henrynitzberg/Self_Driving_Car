@@ -38,12 +38,15 @@ We'll outline everything you need, but you can also follow this video [here](htt
 2. cd into the directory of this README.
 3. run `conda env create -f carla_environment.yml` or you can specify an environment name with `conda env create -n custom_env_name -f carla_environment.yml`
    3a. if you made one by accident or want to augment one, run `conda env update --file environment.yml --prune` instead.
-4. you might be able to run directly in VSCode, but I have been using Jupyter Notebook, so run `jupyter notebook` into conda.
-5. once a tab opens, click into Driving > carla_control_2.ipynb
-6. run your CARLA installation.
-7. only once it loads, you can then run all the cells until 'traffic manager setup'
-   7a. traffic manager setup will run it in synchronous mode, which may make the CARLA window inaccessible. That's normal as a spectator hasn't been set up yet.
-8. once you've taken a breather, run traffic manager setup
-9. now SKIP until you reach the part that says "Test with UI in separate window here"
-   9a. running that will begin the simulation. it will open a window that displays the model's current commands.
-   9b. you can go around with the spectator in CARLA with WASD. hit 'q' to end the simulation
+
+## Running the environment
+
+1. you might be able to run directly in VSCode, but I have been using Jupyter Notebook, so run `jupyter notebook` into conda.
+2. once a tab opens, click into Driving > carla_control_2.ipynb
+3. run your CARLA installation.
+4. only once it loads, you can then run all the cells until 'traffic manager setup'
+   4a. traffic manager setup will run it in synchronous mode, which may make the CARLA window inaccessible. That's normal as a spectator hasn't been set up yet.
+5. once you've taken a breather, run traffic manager setup
+6. now SKIP until you reach the part that says "Test with UI in separate window here"
+   6a. running that will begin the simulation. it will open a window that displays the model's current commands.
+   6b. you can go around with the spectator in CARLA with WASD. hit 'q' to end the simulation
