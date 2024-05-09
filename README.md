@@ -37,16 +37,16 @@ We'll outline everything you need, but you can also follow this video [here](htt
 1. Install Anaconda or open it if you have it. (you can also do this in terminal, if you prefer, but conda is just easier)
 2. cd into the directory of this README.
 3. run `conda env create -f carla_environment.yml` or you can specify an environment name with `conda env create -n custom_env_name -f carla_environment.yml`
-   3a. if you made one by accident or want to augment one, run `conda env update --file environment.yml --prune` instead.
+4. if you made one by accident or want to add to an existing environment, run `conda env update --file environment.yml --prune` instead.
 
 ## Running the environment
 
-1. you might be able to run directly in VSCode, but I have been using Jupyter Notebook, so run `jupyter notebook` into conda.
-2. once a tab opens, click into Driving > carla_control_2.ipynb
-3. run your CARLA installation.
-4. only once it loads, you can then run all the cells until 'traffic manager setup'
-   4a. traffic manager setup will run it in synchronous mode, which may make the CARLA window inaccessible. That's normal as a spectator hasn't been set up yet.
-5. once you've taken a breather, run traffic manager setup
-6. now SKIP until you reach the part that says "Test with UI in separate window here"
-   6a. running that will begin the simulation. it will open a window that displays the model's current commands.
-   6b. you can go around with the spectator in CARLA with WASD. hit 'q' to end the simulation
+1. You might be able to run directly in VSCode, but I have been using Jupyter Notebook, so run `jupyter notebook` in conda.
+2. Once a tab opens, click into Driving > carla_control_2.ipynb
+3. Run your CARLA installation.
+4. Only once it loads, you can then run all the cells until 'traffic manager setup'
+5. Traffic manager setup will run it in synchronous mode, which may make the CARLA window inaccessible. That's normal as a spectator hasn't been set up yet.
+6. Once you've taken a breather, run traffic manager setup
+7. Now SKIP until you reach the part that says "Test with UI in separate window here"
+8. Running that will begin the simulation. it will open a window that displays the model's current commands.
+9. You can go around with the spectator in CARLA with WASD. hit 'q' to end the simulation
