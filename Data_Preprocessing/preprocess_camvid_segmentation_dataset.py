@@ -1,9 +1,6 @@
 import os
 import numpy as np
 import cv2
-import torchvision.models.segmentation
-import torch
-import torchvision.transforms as tf
 from tqdm import tqdm
 
 ALL_LABELS = False

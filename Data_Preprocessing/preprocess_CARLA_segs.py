@@ -1,9 +1,6 @@
 import os
 import numpy as np
 import cv2
-import torchvision.models.segmentation
-import torch
-import torchvision.transforms as tf
 from tqdm import tqdm
 
 NUM_IMAGES = 30000
@@ -21,6 +18,7 @@ def read_images_from_dir(directory, num_images):
 
     return images
 
+# control is [acceleration, brake, steering angle]
 def name_as_control(filename):
     name_arr = filename.split("_")
     name_arr[3] = name_arr[3][:-4]
@@ -35,6 +33,8 @@ def avg_steering(data):
         avg += control[0]
     return avg / len(data)
 
+# We found that our data was biased towards steering right. This function ensures
+# that the average steering angle accross all data is .5
 def adjust_average(images):
     data = []
     for filename, image in images:
@@ -58,12 +58,13 @@ def control_to_filename(control):
     new_name = str(control[0]) + "_" + str(control[1]) + "_" + str(control[2]) + ".png"
     return new_name
 
+
 def convert_filename(filename):
     name_arr = filename.split("_")
     new_name = str(name_arr[1]) + "_" + str(name_arr[2]) + "_" + str(name_arr[3])
     return new_name
 
-
+# reduces number of classes to 5: void/unlabeled, vehicles, road, sidewalk and lane markings
 def convert_to_gray(filename, img, convert_name=False):
     new_name = filename
     if convert_name:
@@ -92,9 +93,9 @@ def convert_to_gray(filename, img, convert_name=False):
     gray_image[vehicles_mask] = 1
     gray_image[road_mask] = 2
     gray_image[sidewalk_mask] = 3
-    # gray_image[person_mask] = 4
-    # gray_image[traffic_light_mask] = 5
     gray_image[lane_marking_mask] = 4
+    # gray_image[person_mask] = 5
+    # gray_image[traffic_light_mask] = 6
 
     return new_name, gray_image
 

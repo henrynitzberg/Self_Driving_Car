@@ -1,13 +1,10 @@
 import os
 import numpy as np
 import cv2
-import torch
-import torchvision.transforms as tf
 from tqdm import tqdm
 
 def read_images_from_dir(directory, seg=False):
     images = {}
-    # for filename in tqdm(os.listdir(directory)):
     for filename in tqdm(os.listdir(directory)):
         absFilePath = str(directory + "/" + filename)
         img = cv2.imread(absFilePath)
@@ -35,8 +32,7 @@ def read_images_from_dir_carla(directory):
 
     return images
 
-# reduces number of classes to 6:
-# void, vehicles, road, sidewalk, person, traffic_light
+# reduces number of classes to 4: void/unlabled, vehicles, road, sidewalk
 def reduce_classes(img):
     # Extract the BGR channels
     blue_channel = img[:, :, 0]
@@ -72,6 +68,8 @@ def reduce_classes(img):
 
     return gray_image
 
+# reduces number of classes to 5: void/unlabled, vehicles, road, sidewalk, 
+# lane markings
 def reduce_classes_CARLA(img):
     blue_channel = img[:, :, 0]
     green_channel = img[:, :, 1]
@@ -124,10 +122,6 @@ for i in tqdm(range(len(CARLA_rgb))):
     rgb = CARLA_rgb[i]
     seg = CARLA_seg[i]
     seg_r = reduce_classes_CARLA(seg)
-
-    # cv2.imshow("seg", seg_r * 30)
-    # cv2.imshow("seg_rgb", seg)
-    # cv2.waitKey()
 
     cv2.imwrite(write_rgb_dir + "/" + str(counter) + ".png", rgb)
     cv2.imwrite(write_seg_dir + "/" + str(counter) + ".png", seg_r)
